@@ -111,4 +111,9 @@ public class AddressResponse {
                 ", district='" + district + '\'' +
                 '}';
     }
+
+    public AddressModel toAddressModel() {
+        return new AddressModel(routeName, formattedAddress);
+    }
+
 }
