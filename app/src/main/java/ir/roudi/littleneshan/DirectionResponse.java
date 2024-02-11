@@ -1,10 +1,13 @@
 package ir.roudi.littleneshan;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DirectionResponse {
     @SerializedName("routes")
@@ -22,12 +25,26 @@ public class DirectionResponse {
         return routes;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "DirectionResponse{" +
                 "routes=" + routes +
                 '}';
     }
+
+    public DirectionModel toDirectionModel() {
+        RouteResponse route = routes.get(0);
+        LegResponse leg = route.getLegs().get(0);
+        return new DirectionModel(
+                route.getOverviewPolyline().getEncodedPolyline(),
+                leg.getSummary(),
+                leg.getDuration().toDurationModel(),
+                leg.getDistance().toDistanceModel(),
+                StepResponse.toStepModels(leg.getSteps())
+        );
+    }
+
 }
 
 class RouteResponse {
@@ -147,6 +164,7 @@ class DistanceResponse {
         return text;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "DistanceResponse{" +
@@ -154,6 +172,11 @@ class DistanceResponse {
                 ", text='" + text + '\'' +
                 '}';
     }
+
+    public DistanceModel toDistanceModel() {
+        return new DistanceModel(value, text);
+    }
+
 }
 
 class DurationResponse {
@@ -177,6 +200,7 @@ class DurationResponse {
         return text;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "DurationResponse{" +
@@ -184,6 +208,11 @@ class DurationResponse {
                 ", text='" + text + '\'' +
                 '}';
     }
+
+    public DurationModel toDurationModel() {
+        return new DurationModel(value, text);
+    }
+
 }
 
 class StepResponse {
@@ -215,6 +244,7 @@ class StepResponse {
         this.encodedPolyline = encodedPolyline;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "StepResponse{" +
@@ -226,4 +256,22 @@ class StepResponse {
                 ", encodedPolyline='" + encodedPolyline + '\'' +
                 '}';
     }
+
+    private StepModel toStepModel() {
+        return new StepModel(
+                name,
+                instruction,
+                distance.toDistanceModel(),
+                duration.toDurationModel(),
+                new LocationModel(startLocation),
+                encodedPolyline
+        );
+    }
+
+    public static List<StepModel> toStepModels(List<StepResponse> steps) {
+        return steps.stream()
+                .map(StepResponse::toStepModel)
+                .collect(Collectors.toList());
+    }
+
 }
