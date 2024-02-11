@@ -1,5 +1,7 @@
 package ir.roudi.littleneshan;
 
+import androidx.annotation.NonNull;
+
 public class AddressModel {
     private final String routeName;
     private final String address;
@@ -17,6 +19,7 @@ public class AddressModel {
         return address;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "AddressModel{" +
