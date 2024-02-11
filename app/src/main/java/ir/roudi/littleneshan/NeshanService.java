@@ -7,6 +7,6 @@ import retrofit2.http.Query;
 public interface NeshanService {
 
     @GET("reverse")
-    Single<AddressResponse> getAddress(@Query("lat") long lat, @Query("lng") long lng);
+    Single<AddressResponse> getAddress(@Query("lat") double lat, @Query("lng") double lng);
 
 }

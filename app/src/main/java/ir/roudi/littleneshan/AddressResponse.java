@@ -94,4 +94,21 @@ public class AddressResponse {
     public String getDistrict() {
         return district;
     }
+
+    @Override
+    public String toString() {
+        return "AddressResponse{" +
+                "formattedAddress='" + formattedAddress + '\'' +
+                ", routeName='" + routeName + '\'' +
+                ", routeType='" + routeType + '\'' +
+                ", neighbourhood='" + neighbourhood + '\'' +
+                ", city='" + city + '\'' +
+                ", place='" + place + '\'' +
+                ", municipalityZone='" + municipalityZone + '\'' +
+                ", inTrafficZone='" + inTrafficZone + '\'' +
+                ", inOddEvenZone='" + inOddEvenZone + '\'' +
+                ", village='" + village + '\'' +
+                ", district='" + district + '\'' +
+                '}';
+    }
 }
