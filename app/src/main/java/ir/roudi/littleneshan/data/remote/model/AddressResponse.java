@@ -1,6 +1,8 @@
-package ir.roudi.littleneshan;
+package ir.roudi.littleneshan.data.remote.model;
 
 import com.google.gson.annotations.SerializedName;
+
+import ir.roudi.littleneshan.data.model.AddressModel;
 
 public class AddressResponse {
 

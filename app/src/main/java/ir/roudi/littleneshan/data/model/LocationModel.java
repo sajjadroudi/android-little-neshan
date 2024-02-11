@@ -1,4 +1,4 @@
-package ir.roudi.littleneshan;
+package ir.roudi.littleneshan.data.model;
 
 import androidx.annotation.NonNull;
 

@@ -1,4 +1,4 @@
-package ir.roudi.littleneshan;
+package ir.roudi.littleneshan.data.remote;
 
 import java.util.concurrent.TimeUnit;
 

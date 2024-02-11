@@ -1,4 +1,4 @@
-package ir.roudi.littleneshan;
+package ir.roudi.littleneshan.data.remote.model;
 
 import androidx.annotation.NonNull;
 
@@ -8,6 +8,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import ir.roudi.littleneshan.data.model.DirectionModel;
+import ir.roudi.littleneshan.data.model.DistanceModel;
+import ir.roudi.littleneshan.data.model.DurationModel;
+import ir.roudi.littleneshan.data.model.LocationModel;
+import ir.roudi.littleneshan.data.model.StepModel;
 
 public class DirectionResponse {
     @SerializedName("routes")

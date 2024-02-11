@@ -1,6 +1,12 @@
-package ir.roudi.littleneshan;
+package ir.roudi.littleneshan.data.repository.navigation;
 
 import io.reactivex.rxjava3.core.Single;
+import ir.roudi.littleneshan.data.model.AddressModel;
+import ir.roudi.littleneshan.data.model.DirectionModel;
+import ir.roudi.littleneshan.data.model.LocationModel;
+import ir.roudi.littleneshan.data.remote.NavigationRemoteDataSource;
+import ir.roudi.littleneshan.data.remote.model.AddressResponse;
+import ir.roudi.littleneshan.data.remote.model.DirectionResponse;
 
 public class NavigationRepositoryDefault implements NavigationRepository {
 

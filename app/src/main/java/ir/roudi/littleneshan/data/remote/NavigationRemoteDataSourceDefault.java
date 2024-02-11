@@ -1,7 +1,9 @@
-package ir.roudi.littleneshan;
+package ir.roudi.littleneshan.data.remote;
 
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import ir.roudi.littleneshan.data.remote.model.AddressResponse;
+import ir.roudi.littleneshan.data.remote.model.DirectionResponse;
 
 public class NavigationRemoteDataSourceDefault implements NavigationRemoteDataSource {
 
