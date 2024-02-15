@@ -11,20 +11,31 @@ import android.os.Bundle;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.hilt.navigation.HiltViewModelFactory;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.carto.core.ScreenBounds;
+import com.carto.core.ScreenPos;
+import com.carto.graphics.Color;
+import com.carto.styles.LineStyle;
+import com.carto.styles.LineStyleBuilder;
 import com.carto.styles.MarkerStyle;
 import com.carto.styles.MarkerStyleBuilder;
 import com.carto.utils.BitmapUtils;
 
 import org.neshan.common.model.LatLng;
+import org.neshan.common.model.LatLngBounds;
+import org.neshan.common.utils.PolylineEncoding;
 import org.neshan.mapsdk.MapView;
 import org.neshan.mapsdk.model.Marker;
+import org.neshan.mapsdk.model.Polyline;
 import org.neshan.mapsdk.style.NeshanMapStyle;
+
+import java.util.ArrayList;
 
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
@@ -34,8 +45,11 @@ import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 public class MainFragment extends Fragment {
 
     private FragmentMainBinding binding;
+
     private Marker userMarker;
     private Marker destinationMarker;
+    private Polyline routingPathPolyLine;
+
     private MainViewModel viewModel;
 
     @Override
@@ -105,6 +119,45 @@ public class MainFragment extends Fragment {
                 markDestinationOnMap(LocationModel.from(latLng));
             }
         });
+
+        viewModel.navigationPath.observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String pathString) {
+                showPathOnMap(pathString);
+            }
+        });
+    }
+
+    private void showPathOnMap(String pathString) {
+        if (routingPathPolyLine != null) {
+            binding.map.removePolyline(routingPathPolyLine);
+        }
+
+        var path = PolylineEncoding.decode(pathString);
+
+        routingPathPolyLine = new Polyline(new ArrayList<>(path), buildLineStyle());
+        binding.map.addPolyline(routingPathPolyLine);
+
+        // setup map camera to show whole path
+        var latLngBounds = new LatLngBounds(
+                viewModel.startLocation.toLatLng(),
+                viewModel.endLocation.toLatLng()
+        );
+        float mapWidth = Math.min(binding.map.getWidth(), binding.map.getHeight());
+        var screenBounds = new ScreenBounds(
+                new ScreenPos(0F, 0F),
+                new ScreenPos(mapWidth, mapWidth)
+        );
+        binding.map.moveToCameraBounds(latLngBounds, screenBounds, true, 0.5f);
+    }
+
+    private LineStyle buildLineStyle() {
+        var lineStCr = new LineStyleBuilder();
+        var color = new Color(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDim75));
+        lineStCr.setColor(color);
+        lineStCr.setWidth(10f);
+        lineStCr.setStretchFactor(0f);
+        return lineStCr.buildStyle();
     }
 
     private void showLocation(LocationModel location, boolean isCachedLocation) {
@@ -166,7 +219,9 @@ public class MainFragment extends Fragment {
 
         binding.map.addMarker(destinationMarker);
 
-        focusOnLocation(location);
+        viewModel.startLocation = viewModel.userLocation.getValue().getLocation();
+        viewModel.endLocation = location;
+        viewModel.navigate();
     }
 
     @Override
