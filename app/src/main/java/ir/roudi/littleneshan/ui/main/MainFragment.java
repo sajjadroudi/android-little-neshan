@@ -8,20 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ir.roudi.littleneshan.R;
+import org.neshan.common.model.LatLng;
+
+import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 
 public class MainFragment extends Fragment {
 
-    public MainFragment() {
-        // Required empty public constructor
-    }
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
+    private FragmentMainBinding binding;
 
     @Override
     public View onCreateView(
@@ -29,6 +22,21 @@ public class MainFragment extends Fragment {
             ViewGroup container,
             Bundle savedInstanceState
     ) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        binding = FragmentMainBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        binding.map.moveCamera(new LatLng(36.340033719833265, 59.54466635391841), 0);
+        binding.map.setZoom(14, 0);
+    }
+
 }
