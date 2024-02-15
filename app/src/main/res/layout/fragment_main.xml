@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -17,7 +18,50 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </FrameLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="16dp">
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/theme"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/btn_gray_light"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp"
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_night" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/location"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/btn_gray_light"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp"
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_location" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/chooseLocation"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_gray_light"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp"
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_navigation" />
+        </LinearLayout>
+
+    </FrameLayout>
 
 </layout>
