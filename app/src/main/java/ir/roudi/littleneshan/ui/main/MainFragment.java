@@ -67,8 +67,16 @@ public class MainFragment extends Fragment {
             }
         });
 
+        // TODO: Maybe it's better to observe only the first item.
         viewModel.userLocation.observe(getViewLifecycleOwner(), location -> {
             showLocation(location.getLocation(), location.isCached());
+        });
+
+        binding.btnLocation.setOnClickListener(v -> {
+            var location = viewModel.userLocation.getValue();
+            if(location != null) {
+                showLocation(location.getLocation(), location.isCached());
+            }
         });
     }
 
