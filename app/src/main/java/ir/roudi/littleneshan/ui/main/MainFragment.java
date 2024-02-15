@@ -63,18 +63,12 @@ public class MainFragment extends Fragment {
         viewModel.startLocationUpdates(new OnTurnOnGpsCallback() {
             @Override
             public void turnOnGps(Exception exception) {
-
+                // TODO
             }
         });
 
-        // TODO: Prevent current location from getting replaced by last location
-
-        viewModel.lastLocation.observe(getViewLifecycleOwner(), location -> {
-            showLocation(location, true);
-        });
-
-        viewModel.currentLocation.observe(getViewLifecycleOwner(), location -> {
-            showLocation(location, true);
+        viewModel.userLocation.observe(getViewLifecycleOwner(), location -> {
+            showLocation(location.getLocation(), location.isCached());
         });
     }
 
