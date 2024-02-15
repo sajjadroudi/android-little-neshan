@@ -28,7 +28,12 @@ public class MainViewModel extends ViewModel {
 
     private final MutableLiveData<String> _navigationPath = new MutableLiveData<>();
     public final LiveData<String> navigationPath = _navigationPath;
+
+    private final MutableLiveData<AddressUiModel> _address = new MutableLiveData<>();
+    public final LiveData<AddressUiModel> address = _address;
+
     private Disposable navigationPathDisposable;
+    private Disposable addressDisposable;
 
     // TODO: Define getter and setter for startLocation and endLocation
     public LocationModel startLocation;
@@ -81,6 +86,19 @@ public class MainViewModel extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(direction -> {
                     _navigationPath.postValue(direction.getOverviewPolyline());
+
+                    addressDisposable = navigationRepository
+                            .getAddress(endLocation)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(address -> {
+                                var value = new AddressUiModel(
+                                        address.getRouteName(),
+                                        direction.getDuration().getText(),
+                                        direction.getDistance().getText(),
+                                        address.getAddress()
+                                );
+                                _address.postValue(value);
+                            });
                 });
     }
 
@@ -88,6 +106,9 @@ public class MainViewModel extends ViewModel {
     protected void onCleared() {
         if(navigationPathDisposable != null)
             navigationPathDisposable.dispose();
+
+        if(addressDisposable != null)
+            addressDisposable.dispose();
 
         super.onCleared();
     }

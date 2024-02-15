@@ -126,6 +126,18 @@ public class MainFragment extends Fragment {
                 showPathOnMap(pathString);
             }
         });
+
+        viewModel.address.observe(getViewLifecycleOwner(), address -> {
+            var action = MainFragmentDirections.actionMainToDestinationDetails(
+                    address.getTitle(),
+                    address.getDuration(),
+                    address.getDistance(),
+                    address.getAddress()
+            );
+
+            findNavController(MainFragment.this)
+                    .navigate(action);
+        });
     }
 
     private void showPathOnMap(String pathString) {

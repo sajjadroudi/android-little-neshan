@@ -32,7 +32,10 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
+        var args = DestinationDetailsBottomSheetArgs.fromBundle(getArguments());
+        binding.title.setText(args.getTitle());
+        binding.duration.setText(args.getDuration());
+        binding.distance.setText(args.getDistance());
+        binding.address.setText(args.getAddress());
     }
 }
