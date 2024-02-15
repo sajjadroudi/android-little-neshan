@@ -104,13 +104,12 @@ public class LocationRepositoryDefault implements LocationRepository {
     }
 
     private LocationRequest buildDefaultLocationRequest() {
-        return new LocationRequest.Builder(
-                LocationRequest.PRIORITY_HIGH_ACCURACY,
-                TimeUnit.SECONDS.toMillis(60)
-        )
-                .build()
-                .setFastestInterval(TimeUnit.SECONDS.toMillis(30))
-                .setMaxWaitTime(TimeUnit.MINUTES.toMillis(2));
+        var request = new LocationRequest();
+        request.setInterval(TimeUnit.SECONDS.toMillis(30));
+        request.setFastestInterval(TimeUnit.SECONDS.toMillis(60));
+        request.setMaxWaitTime(TimeUnit.MINUTES.toMillis(2));
+        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        return request;
     }
 
     private Task<LocationSettingsResponse> buildDefaultLocationSettingsResponseTask(
