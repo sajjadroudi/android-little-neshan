@@ -29,11 +29,9 @@ public class LocationRepositoryDefault implements LocationRepository {
 
     private final SettingsClient locationSettingsClient;
 
-    private final MutableLiveData<LocationModel> _lastLocation = new MutableLiveData<>();
-    public LiveData<LocationModel> lastLocation = _lastLocation;
+    private final MutableLiveData<LocationModel> lastLocation = new MutableLiveData<>();
 
-    private final MutableLiveData<LocationModel> _currentLocation = new MutableLiveData<>();
-    public LiveData<LocationModel> currentLocation = _currentLocation;
+    private final MutableLiveData<LocationModel> currentLocation = new MutableLiveData<>();
 
     private final LocationCallback currentLocationListener = new LocationCallback() {
         @Override
@@ -42,7 +40,7 @@ public class LocationRepositoryDefault implements LocationRepository {
 
             Location location = locationResult.getLastLocation();
             if (location != null) {
-                _currentLocation.postValue(LocationModel.from(location));
+                currentLocation.postValue(LocationModel.from(location));
             }
         }
     };
@@ -54,6 +52,16 @@ public class LocationRepositoryDefault implements LocationRepository {
     ) {
         this.locationClient = locationClient;
         this.locationSettingsClient = settingsClient;
+    }
+
+    @Override
+    public LiveData<LocationModel> getLastLocation() {
+        return lastLocation;
+    }
+
+    @Override
+    public LiveData<LocationModel> getCurrentLocation() {
+        return currentLocation;
     }
 
     @Override
@@ -85,7 +93,7 @@ public class LocationRepositoryDefault implements LocationRepository {
 
         locationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
-                _lastLocation.postValue(LocationModel.from(location));
+                lastLocation.postValue(LocationModel.from(location));
             }
         });
     }
