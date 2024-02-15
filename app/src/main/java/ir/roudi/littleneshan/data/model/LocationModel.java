@@ -1,5 +1,7 @@
 package ir.roudi.littleneshan.data.model;
 
+import android.location.Location;
+
 import androidx.annotation.NonNull;
 
 public class LocationModel {
@@ -33,4 +35,9 @@ public class LocationModel {
                 ", longitude=" + longitude +
                 '}';
     }
+
+    public static LocationModel from(Location location) {
+        return new LocationModel(location.getLatitude(), location.getLongitude());
+    }
+
 }
