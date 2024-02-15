@@ -1,4 +1,4 @@
-package ir.roudi.littleneshan.ui.map;
+package ir.roudi.littleneshan.ui.main;
 
 import android.os.Bundle;
 
@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 
 import ir.roudi.littleneshan.R;
 
-public class MapFragment extends Fragment {
+public class MainFragment extends Fragment {
 
-    public MapFragment() {
+    public MainFragment() {
         // Required empty public constructor
     }
 
@@ -29,6 +29,6 @@ public class MapFragment extends Fragment {
             ViewGroup container,
             Bundle savedInstanceState
     ) {
-        return inflater.inflate(R.layout.fragment_map, container, false);
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 }

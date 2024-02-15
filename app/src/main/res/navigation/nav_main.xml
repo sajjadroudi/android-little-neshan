@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/mapFragment">
+    app:startDestination="@id/mainFragment">
 
     <fragment
-        android:id="@+id/mapFragment"
-        android:name="ir.roudi.littleneshan.ui.map.MapFragment"
-        android:label="map_fragment"
-        tools:layout="@layout/fragment_map" >
+        android:id="@+id/mainFragment"
+        android:name="ir.roudi.littleneshan.ui.main.MainFragment"
+        android:label="main_fragment"
+        tools:layout="@layout/fragment_main" >
     </fragment>
 
 </navigation>
