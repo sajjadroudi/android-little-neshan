@@ -1,5 +1,7 @@
 package ir.roudi.littleneshan.data.remote;
 
+import javax.inject.Inject;
+
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import ir.roudi.littleneshan.data.remote.model.AddressResponse;
@@ -9,6 +11,7 @@ public class NavigationRemoteDataSourceDefault implements NavigationRemoteDataSo
 
     private final NeshanService service;
 
+    @Inject
     public NavigationRemoteDataSourceDefault(NeshanService service) {
         this.service = service;
     }
