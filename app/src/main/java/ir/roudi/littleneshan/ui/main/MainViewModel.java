@@ -76,7 +76,8 @@ public class MainViewModel extends ViewModel {
             return;
         }
 
-        navigationPathDisposable = navigationRepository.getDirection(startLocation, endLocation, 0)
+        navigationPathDisposable = navigationRepository
+                .getDirection(startLocation, endLocation, 0)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(direction -> {
                     _navigationPath.postValue(direction.getOverviewPolyline());

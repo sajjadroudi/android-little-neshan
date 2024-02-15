@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.LittleNeshan" parent="Base.Theme.LittleNeshan" />
+
+    <style name="font_medium">
+        <item name="android:fontFamily">@font/dana_fa_num_medium</item>
+        <item name="fontFamily">@font/dana_fa_num_medium</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
 </resources>
