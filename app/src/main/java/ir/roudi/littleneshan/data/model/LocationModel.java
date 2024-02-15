@@ -46,4 +46,8 @@ public class LocationModel {
         return new LocationModel(location.getLatitude(), location.getLongitude());
     }
 
+    public static LocationModel from(LatLng location) {
+        return new LocationModel(location.getLatitude(), location.getLongitude());
+    }
+
 }

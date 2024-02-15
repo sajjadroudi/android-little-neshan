@@ -2,9 +2,13 @@ package ir.roudi.littleneshan.ui.main;
 
 import static androidx.navigation.fragment.FragmentKt.findNavController;
 
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.hilt.navigation.HiltViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
@@ -17,6 +21,8 @@ import com.carto.styles.MarkerStyle;
 import com.carto.styles.MarkerStyleBuilder;
 import com.carto.utils.BitmapUtils;
 
+import org.neshan.common.model.LatLng;
+import org.neshan.mapsdk.MapView;
 import org.neshan.mapsdk.model.Marker;
 import org.neshan.mapsdk.style.NeshanMapStyle;
 
@@ -29,6 +35,7 @@ public class MainFragment extends Fragment {
 
     private FragmentMainBinding binding;
     private Marker userMarker;
+    private Marker destinationMarker;
     private MainViewModel viewModel;
 
     @Override
@@ -88,6 +95,15 @@ public class MainFragment extends Fragment {
 
             var icon = isNightMode ? R.drawable.ic_light : R.drawable.ic_night;
             binding.btnTheme.setImageResource(icon);
+
+            // TODO: Change color of buttons
+        });
+
+        binding.map.setOnMapLongClickListener(new MapView.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                markDestinationOnMap(LocationModel.from(latLng));
+            }
         });
     }
 
@@ -105,18 +121,52 @@ public class MainFragment extends Fragment {
         if(userMarker != null) {
             binding.map.removeMarker(userMarker);
         }
-        userMarker = new Marker(location.toLatLng(), buildUserMarkerStyle(isCachedLocation));
+        int icon = isCachedLocation ? R.drawable.ic_marker_off : R.drawable.ic_marker;
+        userMarker = new Marker(location.toLatLng(), buildUserMarkerStyle(icon));
         binding.map.addMarker(userMarker);
     }
 
-    private MarkerStyle buildUserMarkerStyle(boolean isCachedLocation) {
-        MarkerStyleBuilder markStCr = new MarkerStyleBuilder();
+    private MarkerStyle buildUserMarkerStyle(int iconResource) {
+        var markStCr = new MarkerStyleBuilder();
         markStCr.setSize(30f);
-        var drawable = isCachedLocation ? R.drawable.ic_marker_off : R.drawable.ic_marker;
-        var androidBitmap = BitmapFactory.decodeResource(getResources(), drawable);
-        var bitmap = BitmapUtils.createBitmapFromAndroidBitmap(androidBitmap);
-        markStCr.setBitmap(bitmap);
+        var drawable = ContextCompat.getDrawable(requireContext(), iconResource);
+        if (drawable != null) {
+            var markerBitmap = BitmapUtils.createBitmapFromAndroidBitmap(toBitmap(drawable));
+            markStCr.setBitmap(markerBitmap);
+        }
         return markStCr.buildStyle();
+    }
+
+    private Bitmap toBitmap(Drawable drawable) {
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        var bitmap = Bitmap.createBitmap(
+                drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(),
+                Bitmap.Config.ARGB_8888
+        );
+
+        var canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
+
+    private void markDestinationOnMap(LocationModel location) {
+        if(destinationMarker != null) {
+            binding.map.removeMarker(destinationMarker);
+        }
+
+        var style = buildUserMarkerStyle(R.drawable.ic_destination);
+        destinationMarker = new Marker(location.toLatLng(), style);
+
+        binding.map.addMarker(destinationMarker);
+
+        focusOnLocation(location);
     }
 
     @Override
