@@ -18,6 +18,7 @@ import com.carto.styles.MarkerStyleBuilder;
 import com.carto.utils.BitmapUtils;
 
 import org.neshan.mapsdk.model.Marker;
+import org.neshan.mapsdk.style.NeshanMapStyle;
 
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
@@ -77,6 +78,16 @@ public class MainFragment extends Fragment {
             if(location != null) {
                 showLocation(location.getLocation(), location.isCached());
             }
+        });
+
+        binding.btnTheme.setOnClickListener(v -> {
+            boolean isNightMode = (binding.map.getMapStyle() == NeshanMapStyle.NESHAN);
+
+            var newTheme = isNightMode ? NeshanMapStyle.NESHAN_NIGHT : NeshanMapStyle.NESHAN;
+            binding.map.setMapStyle(newTheme);
+
+            var icon = isNightMode ? R.drawable.ic_light : R.drawable.ic_night;
+            binding.btnTheme.setImageResource(icon);
         });
     }
 
