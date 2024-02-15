@@ -4,6 +4,8 @@ import android.location.Location;
 
 import androidx.annotation.NonNull;
 
+import org.neshan.common.model.LatLng;
+
 public class LocationModel {
 
     private final double latitude;
@@ -34,6 +36,10 @@ public class LocationModel {
                 "latitude=" + latitude +
                 ", longitude=" + longitude +
                 '}';
+    }
+
+    public LatLng toLatLng() {
+        return new LatLng(latitude, longitude);
     }
 
     public static LocationModel from(Location location) {

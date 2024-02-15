@@ -71,6 +71,7 @@ public class LocationRepositoryDefault implements LocationRepository {
         subscribeToReceiveLocationUpdates(buildDefaultLocationRequest(), turnOnGpsCallback);
     }
 
+    // TODO: Create local model for LocationRequest
     @Override
     @SuppressLint("MissingPermission")
     public void subscribeToReceiveLocationUpdates(

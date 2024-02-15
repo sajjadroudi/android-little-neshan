@@ -8,8 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.neshan.common.model.LatLng;
-
+import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 
 public class MainFragment extends Fragment {
@@ -35,8 +34,11 @@ public class MainFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        binding.map.moveCamera(new LatLng(36.340033719833265, 59.54466635391841), 0);
-        binding.map.setZoom(14, 0);
+    }
+
+    private void focusOnLocation(LocationModel location) {
+        binding.map.moveCamera(location.toLatLng(), 0.25f);
+        binding.map.setZoom(15, 0.25f);
     }
 
 }
