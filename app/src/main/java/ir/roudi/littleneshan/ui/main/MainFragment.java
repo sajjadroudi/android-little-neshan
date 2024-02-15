@@ -1,9 +1,13 @@
 package ir.roudi.littleneshan.ui.main;
 
+import static androidx.navigation.fragment.FragmentKt.findNavController;
+
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.hilt.navigation.HiltViewModelFactory;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +21,14 @@ import org.neshan.mapsdk.model.Marker;
 
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
+import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 
 public class MainFragment extends Fragment {
 
     private FragmentMainBinding binding;
     private Marker userMarker;
+    private MainViewModel viewModel;
 
     @Override
     public View onCreateView(
@@ -34,15 +40,47 @@ public class MainFragment extends Fragment {
         return binding.getRoot();
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupViewModel();
+    }
+
+    private void setupViewModel() {
+        var backStackEntry = findNavController(this)
+                .getBackStackEntry(R.id.nav_main);
+
+        var factory = HiltViewModelFactory.create(requireContext(), backStackEntry);
+
+        viewModel = new ViewModelProvider(backStackEntry, factory)
+                .get(MainViewModel.class);
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
+        viewModel.startLocationUpdates(new OnTurnOnGpsCallback() {
+            @Override
+            public void turnOnGps(Exception exception) {
+
+            }
+        });
+
+        // TODO: Prevent current location from getting replaced by last location
+
+        viewModel.lastLocation.observe(getViewLifecycleOwner(), location -> {
+            showLocation(location, true);
+        });
+
+        viewModel.currentLocation.observe(getViewLifecycleOwner(), location -> {
+            showLocation(location, true);
+        });
+    }
+
+    private void showLocation(LocationModel location, boolean isCachedLocation) {
+        focusOnLocation(location);
+        markUserOnMap(location, isCachedLocation);
     }
 
     private void focusOnLocation(LocationModel location) {
@@ -68,4 +106,9 @@ public class MainFragment extends Fragment {
         return markStCr.buildStyle();
     }
 
+    @Override
+    public void onPause() {
+        viewModel.stopLocationUpdates();
+        super.onPause();
+    }
 }
