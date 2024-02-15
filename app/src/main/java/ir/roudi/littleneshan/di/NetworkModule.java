@@ -3,6 +3,7 @@ package ir.roudi.littleneshan.di;
 import java.util.concurrent.TimeUnit;
 
 import dagger.Module;
+import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 import ir.roudi.littleneshan.data.remote.MainInterceptor;
@@ -16,10 +17,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
+    @Provides
     public static NeshanService provideNeshanService(Retrofit retrofit) {
         return retrofit.create(NeshanService.class);
     }
 
+    @Provides
     public static Retrofit provideRetrofit(OkHttpClient client) {
         return new Retrofit.Builder()
                 .baseUrl("https://api.neshan.org/v4/")
@@ -29,6 +32,7 @@ public class NetworkModule {
                 .build();
     }
 
+    @Provides
     public static OkHttpClient provideOkHttpClient(
             MainInterceptor interceptor
     ) {
