@@ -1,5 +1,7 @@
 package ir.roudi.littleneshan.data.repository.navigation;
 
+import javax.inject.Inject;
+
 import io.reactivex.rxjava3.core.Single;
 import ir.roudi.littleneshan.data.model.AddressModel;
 import ir.roudi.littleneshan.data.model.DirectionModel;
@@ -12,6 +14,7 @@ public class NavigationRepositoryDefault implements NavigationRepository {
 
     private final NavigationRemoteDataSource remoteDataSource;
 
+    @Inject
     public NavigationRepositoryDefault(NavigationRemoteDataSource remoteDataSource) {
         this.remoteDataSource = remoteDataSource;
     }

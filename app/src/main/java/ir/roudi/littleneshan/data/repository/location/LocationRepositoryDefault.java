@@ -19,13 +19,15 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import ir.roudi.littleneshan.data.model.LocationModel;
 
 public class LocationRepositoryDefault implements LocationRepository {
 
-    private FusedLocationProviderClient locationClient;
+    private final FusedLocationProviderClient locationClient;
 
-    private SettingsClient locationSettingsClient;
+    private final SettingsClient locationSettingsClient;
 
     private final MutableLiveData<LocationModel> _lastLocation = new MutableLiveData<>();
     public LiveData<LocationModel> lastLocation = _lastLocation;
@@ -44,6 +46,15 @@ public class LocationRepositoryDefault implements LocationRepository {
             }
         }
     };
+
+    @Inject
+    public LocationRepositoryDefault(
+            FusedLocationProviderClient locationClient,
+            SettingsClient settingsClient
+    ) {
+        this.locationClient = locationClient;
+        this.locationSettingsClient = settingsClient;
+    }
 
     @Override
     public void subscribeToReceiveLocationUpdates(
