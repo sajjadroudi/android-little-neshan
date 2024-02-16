@@ -86,12 +86,14 @@ public class MainViewModel extends ViewModel {
                 .subscribe(direction -> {
                     _navigationPath.postValue(direction.getOverviewPolyline());
 
+                    // TODO: Handle worse case scenarios when data gotten from server is null or invalid.
                     addressDisposable = navigationRepository
                             .getAddress(endLocation)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(address -> {
+                                var routeName = (address.getRouteName() == null) ? "معبر بدون نام" : address.getRouteName();
                                 var value = new AddressUiModel(
-                                        address.getRouteName(),
+                                        routeName,
                                         direction.getDuration().getText(),
                                         direction.getDistance().getText(),
                                         address.getAddress()
