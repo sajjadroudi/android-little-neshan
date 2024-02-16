@@ -10,12 +10,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.hilt.navigation.HiltViewModelFactory;
+import androidx.lifecycle.ViewModelProvider;
 
+import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.databinding.FragmentNavigationBinding;
 
 public class NavigationFragment extends Fragment {
 
     private FragmentNavigationBinding binding;
+    private NavigationViewModel viewModel;
 
     @Nullable
     @Override
@@ -26,6 +30,22 @@ public class NavigationFragment extends Fragment {
     ) {
         binding = FragmentNavigationBinding.inflate(inflater, container, false);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setupViewModel();
+    }
+
+    private void setupViewModel() {
+        var backStackEntry = findNavController(this)
+                .getBackStackEntry(R.id.nav_main);
+
+        var factory = HiltViewModelFactory.create(requireContext(), backStackEntry);
+
+        viewModel = new ViewModelProvider(backStackEntry, factory)
+                .get(NavigationViewModel.class);
     }
 
     @Override
