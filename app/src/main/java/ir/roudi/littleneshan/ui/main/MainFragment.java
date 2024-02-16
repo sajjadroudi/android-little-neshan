@@ -55,8 +55,6 @@ public class MainFragment extends Fragment {
 
     private MainViewModel viewModel;
 
-    // TODO: Add search bar
-
     @Override
     public View onCreateView(
             LayoutInflater inflater,
