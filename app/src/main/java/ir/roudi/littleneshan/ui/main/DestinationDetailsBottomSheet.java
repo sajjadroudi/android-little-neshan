@@ -1,5 +1,7 @@
 package ir.roudi.littleneshan.ui.main;
 
+import static androidx.navigation.fragment.FragmentKt.findNavController;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.NavController;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -15,6 +18,8 @@ import ir.roudi.littleneshan.databinding.BottomSheetDestinationDetailsBinding;
 
 @AndroidEntryPoint
 public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
+
+    public static final String KEY_DOES_START_NAVIGATION = "start";
 
     private BottomSheetDestinationDetailsBinding binding;
 
@@ -37,5 +42,17 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
         binding.duration.setText(args.getDuration());
         binding.distance.setText(args.getDistance());
         binding.address.setText(args.getAddress());
+
+        binding.route.setOnClickListener(v -> {
+            var navController = findNavController(DestinationDetailsBottomSheet.this);
+            var backStack = navController.getPreviousBackStackEntry();
+            if(backStack == null)
+                return;
+            var savedState = backStack.getSavedStateHandle();
+            savedState.set(KEY_DOES_START_NAVIGATION, true);
+
+            if(getDialog() != null)
+                getDialog().dismiss();
+        });
     }
 }

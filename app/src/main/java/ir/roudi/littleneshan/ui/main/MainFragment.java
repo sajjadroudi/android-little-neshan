@@ -8,6 +8,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.hilt.navigation.HiltViewModelFactory;
@@ -17,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.carto.core.ScreenBounds;
 import com.carto.core.ScreenPos;
@@ -52,12 +55,15 @@ public class MainFragment extends Fragment {
 
     private MainViewModel viewModel;
 
+    // TODO: Add search bar
+
     @Override
     public View onCreateView(
             LayoutInflater inflater,
             ViewGroup container,
             Bundle savedInstanceState
     ) {
+        // TODO: Add appropriate widow flags to all screens
         binding = FragmentMainBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -140,6 +146,7 @@ public class MainFragment extends Fragment {
         });
     }
 
+    // TODO: Put delay to improve UX
     private void showPathOnMap(String pathString) {
         if (routingPathPolyLine != null) {
             binding.map.removePolyline(routingPathPolyLine);
@@ -240,5 +247,26 @@ public class MainFragment extends Fragment {
     public void onPause() {
         viewModel.stopLocationUpdates();
         super.onPause();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        findNavController(this)
+                .getCurrentBackStackEntry()
+                .getSavedStateHandle()
+                .getLiveData(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION)
+                .observe(getViewLifecycleOwner(), new Observer<Object>() {
+
+                    @Override
+                    public void onChanged(Object o) {
+                        if(o instanceof Boolean) {
+                            boolean doesStartNavigation = (Boolean) o;
+                            Toast.makeText(getContext(), "doesStartNavigation: " + doesStartNavigation, Toast.LENGTH_SHORT).show();
+                            // TODO: Handle starting navigation
+                        }
+                    }
+                });
     }
 }

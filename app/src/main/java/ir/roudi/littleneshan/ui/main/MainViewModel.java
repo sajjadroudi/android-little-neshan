@@ -1,7 +1,5 @@
 package ir.roudi.littleneshan.ui.main;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -81,6 +79,7 @@ public class MainViewModel extends ViewModel {
             return;
         }
 
+        // TODO: Handle timeout situation
         navigationPathDisposable = navigationRepository
                 .getDirection(startLocation, endLocation, 0)
                 .observeOn(AndroidSchedulers.mainThread())
