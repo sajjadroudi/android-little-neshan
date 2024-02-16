@@ -8,3 +8,4 @@
 - Add data binding.
 - Clean up drawables and resources.
 - Define string resources.
+- Handle disconnection to the internet.

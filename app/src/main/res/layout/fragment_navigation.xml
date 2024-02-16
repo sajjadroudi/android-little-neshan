@@ -36,15 +36,14 @@
             android:orientation="horizontal"
             android:background="@drawable/bg_bottom_sheet"
             android:padding="20dp"
-            android:layout_gravity="bottom">
+            android:layout_gravity="bottom"
+            android:gravity="center_vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/stop"
                 style="@style/font_medium"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="40dp"
-                android:layout_margin="20dp"
-                android:layout_marginTop="10dp"
                 android:background="@drawable/bg_radius_red_25"
                 android:clickable="true"
                 android:focusable="true"
@@ -54,22 +53,15 @@
                 android:textColor="@color/colorWhite"
                 android:textSize="14sp"/>
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/durationIcon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_time"
-                android:tint="@color/colorPrimary" />
-
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/duration"
+                android:id="@+id/distance"
                 style="@style/font_medium"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:hint="زمان رسیدن"
-                android:text="duration"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="فاصله تا مقصد"
+                android:text="distance"
                 android:textColor="@color/colorGrayMedium"
                 android:textColorHint="@color/colorGrayMedium"
                 android:textSize="12sp"
@@ -80,25 +72,29 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_car"
-                android:tint="@color/colorPrimary"
-                app:layout_constraintBottom_toBottomOf="@id/stop"
-                app:layout_constraintEnd_toStartOf="@id/durationIcon"
-                app:layout_constraintHorizontal_bias="0.50"
-                app:layout_constraintStart_toEndOf="@id/stop"
-                app:layout_constraintTop_toTopOf="@id/stop" />
+                android:tint="@color/colorPrimary" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/distance"
+                android:id="@+id/duration"
                 style="@style/font_medium"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:hint="فاصله تا مقصد"
-                android:text="distance"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="زمان رسیدن"
+                android:text="duration"
                 android:textColor="@color/colorGrayMedium"
                 android:textColorHint="@color/colorGrayMedium"
                 android:textSize="12sp"
                 android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/durationIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_time"
+                android:tint="@color/colorPrimary" />
 
         </LinearLayout>
 
