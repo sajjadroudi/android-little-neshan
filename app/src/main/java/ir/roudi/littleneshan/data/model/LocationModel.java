@@ -6,7 +6,9 @@ import androidx.annotation.NonNull;
 
 import org.neshan.common.model.LatLng;
 
-public class LocationModel {
+import java.io.Serializable;
+
+public class LocationModel implements Serializable {
 
     private final double latitude;
 

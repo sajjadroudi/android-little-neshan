@@ -3,17 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/navigation_destination">
+    app:startDestination="@id/main_fragment">
 
     <fragment
         android:id="@+id/main_fragment"
         android:name="ir.roudi.littleneshan.ui.main.MainFragment"
         android:label="main_fragment"
         tools:layout="@layout/fragment_main" >
-
-        <action
-            android:id="@+id/action_main_to_destination_details"
-            app:destination="@id/destination_detail"/>
 
     </fragment>
 
@@ -49,6 +45,23 @@
         android:id="@+id/navigation_destination"
         android:name="ir.roudi.littleneshan.ui.navigation.NavigationFragment"
         android:label="navigation_fragment"
-        tools:layout="@layout/fragment_navigation"/>
+        tools:layout="@layout/fragment_navigation">
+
+        <argument
+            android:name="map_style"
+            app:argType="integer"
+            app:nullable="false"/>
+
+        <argument
+            android:name="start"
+            app:argType="ir.roudi.littleneshan.data.model.LocationModel"
+            app:nullable="false"/>
+
+        <argument
+            android:name="end"
+            app:argType="ir.roudi.littleneshan.data.model.LocationModel"
+            app:nullable="false"/>
+
+    </fragment>
 
 </navigation>

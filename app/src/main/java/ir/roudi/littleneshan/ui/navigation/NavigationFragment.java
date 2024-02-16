@@ -17,9 +17,27 @@ public class NavigationFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
+    ) {
         binding = FragmentNavigationBinding.inflate(inflater, container, false);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        var args = NavigationFragmentArgs.fromBundle(getArguments());
+        setupMapSetting(args.getMapStyle());
+    }
+
+    private void setupMapSetting(int mapStyle) {
+        binding.map.setMapStyle(mapStyle);
+        binding.map.setTrafficEnabled(true);
+        binding.map.setPoiEnabled(true);
+        binding.map.setTilt(40f, 0.25f);
     }
 
 }

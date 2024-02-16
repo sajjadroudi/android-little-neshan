@@ -31,6 +31,9 @@ public class MainViewModel extends ViewModel {
     private final MutableLiveData<Event<AddressUiModel>> _address = new MutableLiveData<>();
     public final LiveData<Event<AddressUiModel>> address = _address;
 
+    private final MutableLiveData<Event<Object>> _navigateToNavigationScreen = new MutableLiveData<>();
+    public final LiveData<Event<Object>> navigateToNavigationScreen = _navigateToNavigationScreen;
+
     private Disposable navigationPathDisposable;
     private Disposable addressDisposable;
 
@@ -102,6 +105,10 @@ public class MainViewModel extends ViewModel {
                                 _address.postValue(new Event<>(value));
                             });
                 });
+    }
+
+    public void navigateToNavigationScreen() {
+        _navigateToNavigationScreen.postValue(new Event<>(new Object()));
     }
 
     @Override

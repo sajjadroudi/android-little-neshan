@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.carto.core.ScreenBounds;
 import com.carto.core.ScreenPos;
@@ -44,6 +43,7 @@ import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
+import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
 
 public class MainFragment extends Fragment {
 
@@ -255,20 +255,33 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        findNavController(this)
+        var navController = findNavController(this);
+
+        navController
                 .getCurrentBackStackEntry()
                 .getSavedStateHandle()
                 .getLiveData(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION)
-                .observe(getViewLifecycleOwner(), new Observer<Object>() {
-
-                    @Override
-                    public void onChanged(Object o) {
-                        if (o instanceof Boolean) {
-                            boolean doesStartNavigation = (Boolean) o;
-                            Toast.makeText(getContext(), "doesStartNavigation: " + doesStartNavigation, Toast.LENGTH_SHORT).show();
-                            // TODO: Handle starting navigation
+                .observe(getViewLifecycleOwner(), o -> {
+                    if (o instanceof Boolean) {
+                        boolean doesStartNavigation = (Boolean) o;
+                        if(doesStartNavigation) {
+                            viewModel.navigateToNavigationScreen();
                         }
                     }
                 });
+
+        viewModel.navigateToNavigationScreen.observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(content -> {
+                var args = new NavigationFragmentArgs.Builder(
+                        binding.map.getMapStyle(),
+                        viewModel.startLocation,
+                        viewModel.endLocation
+                )
+                        .build()
+                        .toBundle();
+
+                navController.navigate(R.id.navigation_destination, args);
+            });
+        });
     }
 }

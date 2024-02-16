@@ -9,3 +9,6 @@
 - Clean up drawables and resources.
 - Define string resources.
 - Handle disconnection to the internet.
+- Maybe it's better to add progress bar.
+- Use actions for navigation.
+- Use parcelable instead of serializable.
