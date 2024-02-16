@@ -11,13 +11,13 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainInterceptor implements Interceptor {
+public class AuthInterceptor implements Interceptor {
 
     private static final String KEY_API_KEY = "Api-Key";
     private static final String VALUE_API_KEY = "service.9c22024b43d14d749c794c2a280a90d6";
 
     @Inject
-    public MainInterceptor() {
+    public AuthInterceptor() {
 
     }
 

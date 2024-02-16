@@ -6,7 +6,7 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
-import ir.roudi.littleneshan.data.remote.MainInterceptor;
+import ir.roudi.littleneshan.data.remote.AuthInterceptor;
 import ir.roudi.littleneshan.data.remote.NeshanService;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -35,7 +35,7 @@ public class NetworkModule {
 
     @Provides
     public static OkHttpClient provideOkHttpClient(
-            MainInterceptor interceptor,
+            AuthInterceptor interceptor,
             HttpLoggingInterceptor loggingInterceptor
     ) {
         return new OkHttpClient.Builder()
