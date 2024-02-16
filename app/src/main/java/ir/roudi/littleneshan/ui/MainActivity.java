@@ -1,4 +1,4 @@
-package ir.roudi.littleneshan;
+package ir.roudi.littleneshan.ui;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import ir.roudi.littleneshan.R;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
