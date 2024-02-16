@@ -25,8 +25,8 @@ public class MainViewModel extends ViewModel {
 
     public final LiveData<UserLocationUiModel> userLocation;
 
-    private final MutableLiveData<String> _navigationPath = new MutableLiveData<>();
-    public final LiveData<String> navigationPath = _navigationPath;
+    private final MutableLiveData<Event<String>> _navigationPath = new MutableLiveData<>();
+    public final LiveData<Event<String>> navigationPath = _navigationPath;
 
     private final MutableLiveData<Event<AddressUiModel>> _address = new MutableLiveData<>();
     public final LiveData<Event<AddressUiModel>> address = _address;
@@ -88,7 +88,7 @@ public class MainViewModel extends ViewModel {
                 .getDirection(startLocation, endLocation, 0)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(direction -> {
-                    _navigationPath.postValue(direction.getOverviewPolyline());
+                    _navigationPath.postValue(new Event<>(direction.getOverviewPolyline()));
 
                     // TODO: Handle worse case scenarios when data gotten from server is null or invalid.
                     addressDisposable = navigationRepository

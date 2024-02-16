@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.hilt.navigation.HiltViewModelFactory;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
@@ -124,11 +123,8 @@ public class MainFragment extends Fragment {
             }
         });
 
-        viewModel.navigationPath.observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String pathString) {
-                showPathOnMap(pathString);
-            }
+        viewModel.navigationPath.observe(getViewLifecycleOwner(), pathEvent -> {
+            pathEvent.doIfNotHandled(this::showPathOnMap);
         });
 
         viewModel.address.observe(getViewLifecycleOwner(), addressEvent -> {
@@ -272,6 +268,10 @@ public class MainFragment extends Fragment {
 
         viewModel.navigateToNavigationScreen.observe(getViewLifecycleOwner(), event -> {
             event.doIfNotHandled(content -> {
+                navController.getCurrentBackStackEntry()
+                        .getSavedStateHandle()
+                        .remove(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION);
+
                 var args = new NavigationFragmentArgs.Builder(
                         binding.map.getMapStyle(),
                         viewModel.startLocation,
@@ -280,8 +280,28 @@ public class MainFragment extends Fragment {
                         .build()
                         .toBundle();
 
+                removeMapObjects();
+
                 navController.navigate(R.id.navigation_destination, args);
             });
         });
+    }
+
+    private void removeMapObjects() {
+        viewModel.endLocation = null;
+
+        if (routingPathPolyLine != null) {
+            binding.map.removePolyline(routingPathPolyLine);
+        }
+
+        if(userMarker != null) {
+            binding.map.removeMarker(userMarker);
+        }
+
+        if(destinationMarker != null) {
+            binding.map.removeMarker(destinationMarker);
+        }
+
+        focusOnLocation(viewModel.startLocation);
     }
 }

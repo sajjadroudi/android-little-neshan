@@ -3,12 +3,14 @@
 
 ## Feature
 - Add search bar.
+- Add foreground service.
 
 ## Improvement
 - Add data binding.
 - Clean up drawables and resources.
 - Define string resources.
 - Handle disconnection to the internet.
+- Handle unexpected situations when working with api.
 - Maybe it's better to add progress bar.
 - Use actions for navigation.
 - Use parcelable instead of serializable.

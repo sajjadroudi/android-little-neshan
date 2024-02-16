@@ -1,5 +1,7 @@
 package ir.roudi.littleneshan.ui.navigation;
 
+import static androidx.navigation.fragment.FragmentKt.findNavController;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +32,12 @@ public class NavigationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         var args = NavigationFragmentArgs.fromBundle(getArguments());
+
         setupMapSetting(args.getMapStyle());
+
+        binding.stop.setOnClickListener(v -> {
+            findNavController(this).navigateUp();
+        });
     }
 
     private void setupMapSetting(int mapStyle) {
