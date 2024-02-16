@@ -102,7 +102,7 @@ public class MainFragment extends Fragment {
 
         binding.btnLocation.setOnClickListener(v -> {
             var location = viewModel.userLocation.getValue();
-            if(location != null) {
+            if (location != null) {
                 showLocation(location.getLocation(), location.isCached());
             }
         });
@@ -134,15 +134,17 @@ public class MainFragment extends Fragment {
         });
 
         viewModel.address.observe(getViewLifecycleOwner(), address -> {
-            var action = MainFragmentDirections.actionMainToDestinationDetails(
+            var bundle = new DestinationDetailsBottomSheetArgs.Builder(
                     address.getTitle(),
                     address.getDuration(),
                     address.getDistance(),
                     address.getAddress()
-            );
+            )
+                    .build()
+                    .toBundle();
 
             findNavController(MainFragment.this)
-                    .navigate(action);
+                    .navigate(R.id.destination_detail, bundle);
         });
     }
 
@@ -190,7 +192,7 @@ public class MainFragment extends Fragment {
     }
 
     private void markUserOnMap(LocationModel location, boolean isCachedLocation) {
-        if(userMarker != null) {
+        if (userMarker != null) {
             binding.map.removeMarker(userMarker);
         }
         int icon = isCachedLocation ? R.drawable.ic_marker_off : R.drawable.ic_marker;
@@ -229,7 +231,7 @@ public class MainFragment extends Fragment {
     }
 
     private void markDestinationOnMap(LocationModel location) {
-        if(destinationMarker != null) {
+        if (destinationMarker != null) {
             binding.map.removeMarker(destinationMarker);
         }
 
@@ -261,7 +263,7 @@ public class MainFragment extends Fragment {
 
                     @Override
                     public void onChanged(Object o) {
-                        if(o instanceof Boolean) {
+                        if (o instanceof Boolean) {
                             boolean doesStartNavigation = (Boolean) o;
                             Toast.makeText(getContext(), "doesStartNavigation: " + doesStartNavigation, Toast.LENGTH_SHORT).show();
                             // TODO: Handle starting navigation
