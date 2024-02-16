@@ -3,3 +3,8 @@
 
 ## Feature
 - Add search bar.
+
+## Improvement
+- Add data binding.
+- Clean up drawables and resources.
+- Define string resources.
