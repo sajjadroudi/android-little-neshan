@@ -133,18 +133,20 @@ public class MainFragment extends Fragment {
             }
         });
 
-        viewModel.address.observe(getViewLifecycleOwner(), address -> {
-            var bundle = new DestinationDetailsBottomSheetArgs.Builder(
-                    address.getTitle(),
-                    address.getDuration(),
-                    address.getDistance(),
-                    address.getAddress()
-            )
-                    .build()
-                    .toBundle();
+        viewModel.address.observe(getViewLifecycleOwner(), addressEvent -> {
+            addressEvent.doIfNotHandled(address -> {
+                var bundle = new DestinationDetailsBottomSheetArgs.Builder(
+                        address.getTitle(),
+                        address.getDuration(),
+                        address.getDistance(),
+                        address.getAddress()
+                )
+                        .build()
+                        .toBundle();
 
-            findNavController(MainFragment.this)
-                    .navigate(R.id.destination_detail, bundle);
+                findNavController(MainFragment.this)
+                        .navigate(R.id.destination_detail, bundle);
+            });
         });
     }
 

@@ -46,9 +46,7 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
 
         binding.route.setOnClickListener(v -> {
             setStartNavigation(true);
-
-            if(getDialog() != null)
-                getDialog().dismiss();
+            close();
         });
 
         if(getDialog() != null) {
@@ -56,7 +54,7 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
                     setStartNavigation(false);
-                    dialog.dismiss();
+                    close();
                 }
             });
         }
@@ -70,4 +68,11 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
         var savedState = backStack.getSavedStateHandle();
         savedState.set(KEY_DOES_START_NAVIGATION, value);
     }
+
+    private void close() {
+        dismiss();
+        var navController = findNavController(DestinationDetailsBottomSheet.this);
+        navController.popBackStack();
+    }
+
 }

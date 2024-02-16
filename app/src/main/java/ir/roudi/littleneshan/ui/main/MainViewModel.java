@@ -14,6 +14,7 @@ import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.LocationRepository;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
 import ir.roudi.littleneshan.data.repository.navigation.NavigationRepository;
+import ir.roudi.littleneshan.utils.Event;
 
 @HiltViewModel
 public class MainViewModel extends ViewModel {
@@ -27,8 +28,8 @@ public class MainViewModel extends ViewModel {
     private final MutableLiveData<String> _navigationPath = new MutableLiveData<>();
     public final LiveData<String> navigationPath = _navigationPath;
 
-    private final MutableLiveData<AddressUiModel> _address = new MutableLiveData<>();
-    public final LiveData<AddressUiModel> address = _address;
+    private final MutableLiveData<Event<AddressUiModel>> _address = new MutableLiveData<>();
+    public final LiveData<Event<AddressUiModel>> address = _address;
 
     private Disposable navigationPathDisposable;
     private Disposable addressDisposable;
@@ -98,7 +99,7 @@ public class MainViewModel extends ViewModel {
                                         direction.getDistance().getText(),
                                         address.getAddress()
                                 );
-                                _address.postValue(value);
+                                _address.postValue(new Event<>(value));
                             });
                 });
     }
