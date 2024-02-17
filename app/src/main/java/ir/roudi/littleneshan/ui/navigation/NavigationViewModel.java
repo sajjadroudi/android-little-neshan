@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
@@ -11,9 +13,11 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import ir.roudi.littleneshan.data.model.DirectionModel;
 import ir.roudi.littleneshan.data.model.LocationModel;
+import ir.roudi.littleneshan.data.model.StepModel;
 import ir.roudi.littleneshan.data.repository.location.LocationRepository;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
 import ir.roudi.littleneshan.data.repository.navigation.NavigationRepository;
+import ir.roudi.littleneshan.utils.Event;
 
 @HiltViewModel
 public class NavigationViewModel extends ViewModel {
@@ -23,10 +27,18 @@ public class NavigationViewModel extends ViewModel {
 
     private final MutableLiveData<DirectionModel> _direction = new MutableLiveData<>();
     public final LiveData<DirectionModel> direction = _direction;
+
+    private final MutableLiveData<List<StepModel>> _remainingSteps = new MutableLiveData<>(List.of());
+    public LiveData<List<StepModel>> remainingSteps = _remainingSteps;
+
+    private final MutableLiveData<Event<Boolean>> _reachedDestination = new MutableLiveData<>(new Event<>(false));
+    public LiveData<Event<Boolean>> reachedDestination = _reachedDestination;
+
     private LocationModel startLocation;
     private LocationModel endLocation;
     private Disposable loadDirectionDisposable;
     public final LiveData<LocationModel> userLocation;
+    private int lastReachedStepIndex = 0;
 
     @Inject
     public NavigationViewModel(
@@ -66,8 +78,47 @@ public class NavigationViewModel extends ViewModel {
                 .getDirection(startLocation, endLocation, bearing)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(direction -> {
+                    lastReachedStepIndex = 0;
                     _direction.postValue(direction);
                 });
+    }
+
+    public void updateUserProgress() {
+        var direction = this.direction.getValue();
+        if(direction == null) {
+            // TODO: Handle error
+            return;
+        }
+
+        List<StepModel> steps = direction.getSteps();
+
+        if(steps == null || steps.size() < 2) {
+            // TODO: Handle error
+            return;
+        }
+
+        var userLocation = this.userLocation.getValue();
+        if(userLocation == null) {
+            // TODO: Handle error
+            return;
+        }
+
+        var currentStep = steps.get(lastReachedStepIndex);
+        var nextStep = steps.get(lastReachedStepIndex + 1);
+
+        var currentStepToNextStepDistance = currentStep.getStartPoint().distanceTo(nextStep.getStartPoint());
+        var currentStepToUserLocationDistance = currentStep.getStartPoint().distanceTo(userLocation);
+
+        var userIsPassedCurrentStep = (currentStepToUserLocationDistance >= currentStepToNextStepDistance);
+        if(userIsPassedCurrentStep) {
+            lastReachedStepIndex++;
+
+            var remaining = steps.subList(lastReachedStepIndex, steps.size());
+            _remainingSteps.postValue(remaining);
+
+            var reachedDestination = (remaining.size() <= 1);
+            _reachedDestination.postValue(new Event<>(reachedDestination));
+        }
     }
 
 }
