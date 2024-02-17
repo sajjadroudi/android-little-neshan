@@ -3,6 +3,8 @@ package ir.roudi.littleneshan.ui.navigation;
 import static androidx.navigation.fragment.FragmentKt.findNavController;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -123,6 +125,9 @@ public class NavigationFragment extends Fragment {
             event.doIfNotHandled(reachedDestination -> {
                 if(reachedDestination) {
                     Toast.makeText(getContext(), "به مقصد رسیدید!", Toast.LENGTH_SHORT).show();
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        findNavController(NavigationFragment.this).navigateUp();
+                    }, 3000);
                 }
             });
         });

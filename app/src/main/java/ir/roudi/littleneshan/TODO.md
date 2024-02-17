@@ -18,3 +18,4 @@
 - Use parcelable instead of serializable.
 - Stop location updates when needed.
 - Add "return to the path" feature to the navigation screen.
+- Subscribe location with more precise config in the navigation screen.
