@@ -79,6 +79,9 @@ public class NavigationViewModel extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(direction -> {
                     lastReachedStepIndex = 0;
+
+                    _remainingSteps.postValue(direction.getSteps());
+
                     _direction.postValue(direction);
                 });
     }
@@ -108,6 +111,12 @@ public class NavigationViewModel extends ViewModel {
 
         var currentStepToNextStepDistance = currentStep.getStartPoint().distanceTo(nextStep.getStartPoint());
         var currentStepToUserLocationDistance = currentStep.getStartPoint().distanceTo(userLocation);
+
+        var userShouldBeLocatedOnTheFirstStep = (lastReachedStepIndex == 0);
+        var userIsNotLocatedOnTheFirstStep = (currentStepToUserLocationDistance > 5);
+        if(userShouldBeLocatedOnTheFirstStep && userIsNotLocatedOnTheFirstStep) {
+            return;
+        }
 
         var userIsPassedCurrentStep = (currentStepToUserLocationDistance >= currentStepToNextStepDistance);
         if(userIsPassedCurrentStep) {
