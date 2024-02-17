@@ -2,10 +2,6 @@ package ir.roudi.littleneshan.ui.main;
 
 import static androidx.navigation.fragment.FragmentKt.findNavController;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -43,6 +39,7 @@ import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
+import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
 
 public class MainFragment extends Fragment {
 
@@ -201,29 +198,12 @@ public class MainFragment extends Fragment {
         markStCr.setSize(30f);
         var drawable = ContextCompat.getDrawable(requireContext(), iconResource);
         if (drawable != null) {
-            var markerBitmap = BitmapUtils.createBitmapFromAndroidBitmap(toBitmap(drawable));
+            var markerBitmap = BitmapUtils.createBitmapFromAndroidBitmap(
+                    LittleNeshanBitmapUtils.toBitmap(drawable)
+            );
             markStCr.setBitmap(markerBitmap);
         }
         return markStCr.buildStyle();
-    }
-
-    private Bitmap toBitmap(Drawable drawable) {
-
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-
-        var bitmap = Bitmap.createBitmap(
-                drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(),
-                Bitmap.Config.ARGB_8888
-        );
-
-        var canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
     }
 
     private void markDestinationOnMap(LocationModel location) {

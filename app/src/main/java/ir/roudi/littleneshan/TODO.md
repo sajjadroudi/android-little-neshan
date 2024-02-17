@@ -15,3 +15,5 @@
 - Maybe it's better to add progress bar.
 - Use actions for navigation.
 - Use parcelable instead of serializable.
+- Stop location updates when needed.
+- Add "return to the path" feature to the navigation screen.
