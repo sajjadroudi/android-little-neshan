@@ -36,6 +36,9 @@ public class NavigationFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupViewModel();
+
+       var args = NavigationFragmentArgs.fromBundle(getArguments());
+       viewModel.startNavigation(args.getStart(), args.getEnd());
     }
 
     private void setupViewModel() {
@@ -57,6 +60,18 @@ public class NavigationFragment extends Fragment {
 
         binding.stop.setOnClickListener(v -> {
             findNavController(this).navigateUp();
+        });
+
+        viewModel.direction.observe(getViewLifecycleOwner(), direction -> {
+            if(direction == null)
+                return;
+
+            if(direction.getSteps() == null || direction.getSteps().isEmpty())
+                return;
+
+            var nextStep = direction.getSteps().get(0);
+            var text =  "بعدی: " + nextStep.getName() + "\n" + nextStep.getDistance().getText() + " دیگر " + nextStep.getInstruction();
+            binding.address.setText(text);
         });
     }
 
