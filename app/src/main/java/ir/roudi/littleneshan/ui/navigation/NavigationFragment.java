@@ -66,6 +66,10 @@ public class NavigationFragment extends Fragment {
             if(direction == null)
                 return;
 
+            binding.distance.setText(direction.getDistance().getText());
+
+            binding.duration.setText(direction.getDuration().getText());
+
             if(direction.getSteps() == null || direction.getSteps().isEmpty())
                 return;
 
