@@ -44,6 +44,17 @@ public class LocationModel implements Serializable {
         return new LatLng(latitude, longitude);
     }
 
+    public float distanceTo(LocationModel destination) {
+        return toLocation().distanceTo(destination.toLocation());
+    }
+
+    private Location toLocation() {
+        Location location = new Location("");
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        return location;
+    }
+
     public static LocationModel from(Location location) {
         return new LocationModel(location.getLatitude(), location.getLongitude());
     }
