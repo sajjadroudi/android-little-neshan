@@ -192,7 +192,7 @@ public class NavigationFragment extends Fragment {
         binding.map.setMapStyle(mapStyle);
         binding.map.setTrafficEnabled(true);
         binding.map.setPoiEnabled(true);
-        binding.map.setTilt(40f, 0.25f);
+        binding.map.setTilt(40f, 0f);
     }
 
     private void focusOnLocation(LocationModel location) {
