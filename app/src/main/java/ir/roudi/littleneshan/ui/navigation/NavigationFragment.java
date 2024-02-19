@@ -61,8 +61,7 @@ public class NavigationFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(ACTION_STOP_NAVIGATION_SERVICE.equals(intent.getAction())) {
-                findNavController(NavigationFragment.this)
-                        .navigateUp();
+                viewModel.navigateUp();
             }
         }
     };
@@ -125,7 +124,7 @@ public class NavigationFragment extends Fragment {
         setupMapSetting(args.getMapStyle());
 
         binding.stop.setOnClickListener(v -> {
-            findNavController(this).navigateUp();
+            viewModel.navigateUp();
         });
 
         viewModel.direction.observe(getViewLifecycleOwner(), direction -> {
@@ -169,6 +168,15 @@ public class NavigationFragment extends Fragment {
                 return;
 
             updatePathOnMap(steps);
+        });
+
+        viewModel.navigateUpAction.observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(navigateUp -> {
+                if(navigateUp) {
+                    findNavController(NavigationFragment.this)
+                            .navigateUp();
+                }
+            });
         });
     }
 

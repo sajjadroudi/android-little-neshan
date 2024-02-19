@@ -29,10 +29,13 @@ public class NavigationViewModel extends ViewModel {
     public final LiveData<DirectionModel> direction = _direction;
 
     private final MutableLiveData<List<StepModel>> _remainingSteps = new MutableLiveData<>(List.of());
-    public LiveData<List<StepModel>> remainingSteps = _remainingSteps;
+    public final LiveData<List<StepModel>> remainingSteps = _remainingSteps;
 
     private final MutableLiveData<Event<Boolean>> _reachedDestination = new MutableLiveData<>(new Event<>(false));
-    public LiveData<Event<Boolean>> reachedDestination = _reachedDestination;
+    public final LiveData<Event<Boolean>> reachedDestination = _reachedDestination;
+
+    private final MutableLiveData<Event<Boolean>> _navigateUpAction = new MutableLiveData<>(new Event<>(false));
+    public final LiveData<Event<Boolean>> navigateUpAction = _navigateUpAction;
 
     private LocationModel startLocation;
     private LocationModel endLocation;
@@ -128,6 +131,10 @@ public class NavigationViewModel extends ViewModel {
             var reachedDestination = (remaining.size() <= 1);
             _reachedDestination.postValue(new Event<>(reachedDestination));
         }
+    }
+
+    public void navigateUp() {
+        _navigateUpAction.postValue(new Event<>(true));
     }
 
 }
