@@ -15,6 +15,8 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import ir.roudi.littleneshan.BuildConfig;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -30,6 +32,7 @@ public class NavigationForegroundService extends Service {
     private static final int NOTIFICATION_ID = 9876;
     private static final String CHANNEL_ID = "little-neshan-navigation-notification-channel";
     private static final String CHANNEL_NAME = "Navigation";
+    private static final String ACTION_STOP = BuildConfig.APPLICATION_ID + ".STOP_NAVIGATION_SERVICE";
 
     @Nullable
     @Override
@@ -62,6 +65,7 @@ public class NavigationForegroundService extends Service {
                 .setOngoing(true)
                 .setSilent(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .addAction(0, "پایان", buildEndActionIntent())
                 .build();
     }
 
@@ -75,6 +79,17 @@ public class NavigationForegroundService extends Service {
                 0,
                 launchActivityIntent,
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        );
+    }
+
+    private PendingIntent buildEndActionIntent() {
+        var intent = new Intent(this, NavigationForegroundService.class);
+        intent.setAction(ACTION_STOP);
+        return PendingIntent.getService(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
     }
 
@@ -97,4 +112,11 @@ public class NavigationForegroundService extends Service {
         context.stopService(intent);
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if(ACTION_STOP.equals(intent.getAction())) {
+            stopSelf();
+        }
+        return START_NOT_STICKY;
+    }
 }
