@@ -21,3 +21,6 @@
 - Subscribe location with more precise config in the navigation screen.
 - Advance navigation.
 - Check di components.
+- Improve focus location.
+  - User marker should be bottom instead of center of the screen.
+  - Just like Neshan.

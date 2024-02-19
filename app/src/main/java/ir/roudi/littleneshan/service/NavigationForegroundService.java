@@ -3,17 +3,23 @@ package ir.roudi.littleneshan.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import ir.roudi.littleneshan.R;
+import ir.roudi.littleneshan.ui.MainActivity;
 
 @AndroidEntryPoint
 public class NavigationForegroundService extends Service {
@@ -21,19 +27,74 @@ public class NavigationForegroundService extends Service {
     @Inject
     public NotificationManager notificationManager;
 
+    private static final int NOTIFICATION_ID = 9876;
+    private static final String CHANNEL_ID = "little-neshan-navigation-notification-channel";
+    private static final String CHANNEL_NAME = "Navigation";
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        postNotification();
+    }
+
+    private void postNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            var channel = buildNotificationChannel();
+            notificationManager.createNotificationChannel(channel);
+        }
+        
+        startForeground(NOTIFICATION_ID, buildNotification());
+    }
+
+    private Notification buildNotification() {
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("نشان کوچولو در حال مسیریابی")
+                .setSmallIcon(R.drawable.ic_navigation)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(buildContentIntent())
+                .setOngoing(true)
+                .setSilent(true)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .build();
+    }
+
+    private PendingIntent buildContentIntent() {
+        var launchActivityIntent = new Intent(this, MainActivity.class);
+        launchActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        launchActivityIntent.setAction(Intent.ACTION_VIEW);
+
+        return PendingIntent.getActivity(
+                this,
+                0,
+                launchActivityIntent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        );
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private NotificationChannel buildNotificationChannel() {
         return new NotificationChannel(
-                "little-neshan-navigation-notification-channel",
-                "Navigation",
+                CHANNEL_ID,
+                CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_DEFAULT
         );
+    }
+
+    public static void startService(Context context) {
+        var intent = new Intent(context, NavigationForegroundService.class);
+        ContextCompat.startForegroundService(context, intent);
+    }
+
+    public static void stopService(Context context) {
+        var intent = new Intent(context, NavigationForegroundService.class);
+        context.stopService(intent);
     }
 
 }
