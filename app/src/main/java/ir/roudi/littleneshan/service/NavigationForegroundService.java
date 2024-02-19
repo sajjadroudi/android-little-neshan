@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import ir.roudi.littleneshan.BuildConfig;
 
@@ -22,6 +23,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.ui.MainActivity;
+import ir.roudi.littleneshan.ui.navigation.NavigationFragment;
 
 @AndroidEntryPoint
 public class NavigationForegroundService extends Service {
@@ -119,4 +121,14 @@ public class NavigationForegroundService extends Service {
         }
         return START_NOT_STICKY;
     }
+
+    @Override
+    public void onDestroy() {
+
+        var intent = new Intent(NavigationFragment.ACTION_STOP_NAVIGATION_SERVICE);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+        super.onDestroy();
+    }
+
 }

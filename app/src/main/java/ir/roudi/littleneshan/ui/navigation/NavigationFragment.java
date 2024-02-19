@@ -2,6 +2,10 @@ package ir.roudi.littleneshan.ui.navigation;
 
 import static androidx.navigation.fragment.FragmentKt.findNavController;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.hilt.navigation.HiltViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.carto.graphics.Color;
 import com.carto.styles.LineStyle;
@@ -33,6 +38,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ir.roudi.littleneshan.BuildConfig;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
@@ -48,6 +54,18 @@ public class NavigationFragment extends Fragment {
 
     private Marker userLocationMarker;
     private Polyline remainingPathPolyline;
+
+    public static final String ACTION_STOP_NAVIGATION_SERVICE = BuildConfig.APPLICATION_ID + ".ACTION_STOP_NAVIGATION_SERVICE";
+
+    private final BroadcastReceiver stopNavigationForegroundService = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(ACTION_STOP_NAVIGATION_SERVICE.equals(intent.getAction())) {
+                findNavController(NavigationFragment.this)
+                        .navigateUp();
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -72,10 +90,21 @@ public class NavigationFragment extends Fragment {
             }
         });
 
-       var args = NavigationFragmentArgs.fromBundle(getArguments());
-       viewModel.startNavigation(args.getStart(), args.getEnd());
+        var args = NavigationFragmentArgs.fromBundle(getArguments());
+        viewModel.startNavigation(args.getStart(), args.getEnd());
+
+        registerBroadcastReceiver();
 
         NavigationForegroundService.startService(getContext());
+    }
+
+    private void registerBroadcastReceiver() {
+        var intentFilter = new IntentFilter(ACTION_STOP_NAVIGATION_SERVICE);
+        LocalBroadcastManager.getInstance(requireContext())
+                .registerReceiver(
+                        stopNavigationForegroundService,
+                        intentFilter
+                );
     }
 
     private void setupViewModel() {
@@ -100,23 +129,23 @@ public class NavigationFragment extends Fragment {
         });
 
         viewModel.direction.observe(getViewLifecycleOwner(), direction -> {
-            if(direction == null)
+            if (direction == null)
                 return;
 
             binding.distance.setText(direction.getDistance().getText());
 
             binding.duration.setText(direction.getDuration().getText());
 
-            if(direction.getSteps() == null || direction.getSteps().isEmpty())
+            if (direction.getSteps() == null || direction.getSteps().isEmpty())
                 return;
 
             var nextStep = direction.getSteps().get(0);
-            var text =  "بعدی: " + nextStep.getName() + "\n" + nextStep.getDistance().getText() + " دیگر " + nextStep.getInstruction();
+            var text = "بعدی: " + nextStep.getName() + "\n" + nextStep.getDistance().getText() + " دیگر " + nextStep.getInstruction();
             binding.address.setText(text);
         });
 
         viewModel.userLocation.observe(getViewLifecycleOwner(), userLocation -> {
-            if(userLocation == null)
+            if (userLocation == null)
                 return;
 
             viewModel.updateUserProgress();
@@ -126,7 +155,7 @@ public class NavigationFragment extends Fragment {
 
         viewModel.reachedDestination.observe(getViewLifecycleOwner(), event -> {
             event.doIfNotHandled(reachedDestination -> {
-                if(reachedDestination) {
+                if (reachedDestination) {
                     Toast.makeText(getContext(), "به مقصد رسیدید!", Toast.LENGTH_SHORT).show();
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
                         findNavController(NavigationFragment.this).navigateUp();
@@ -136,7 +165,7 @@ public class NavigationFragment extends Fragment {
         });
 
         viewModel.remainingSteps.observe(getViewLifecycleOwner(), steps -> {
-            if(steps == null)
+            if (steps == null)
                 return;
 
             updatePathOnMap(steps);
@@ -144,7 +173,7 @@ public class NavigationFragment extends Fragment {
     }
 
     private void updatePathOnMap(List<StepModel> remainingSteps) {
-        if(remainingPathPolyline != null) {
+        if (remainingPathPolyline != null) {
             binding.map.removePolyline(remainingPathPolyline);
         }
 
@@ -158,7 +187,7 @@ public class NavigationFragment extends Fragment {
         binding.map.addPolyline(remainingPathPolyline);
 
         var userLocation = viewModel.userLocation.getValue();
-        if(userLocation != null) {
+        if (userLocation != null) {
             focusOnLocation(userLocation);
         }
     }
@@ -172,7 +201,7 @@ public class NavigationFragment extends Fragment {
     }
 
     private void updateLocationMarker(LocationModel location) {
-        if(userLocationMarker != null) {
+        if (userLocationMarker != null) {
             binding.map.removeMarker(userLocationMarker);
         }
 
@@ -186,7 +215,7 @@ public class NavigationFragment extends Fragment {
         markerBuilder.setSize(30f);
 
         var drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_marker);
-        if(drawable != null) {
+        if (drawable != null) {
             var markerBitmap = BitmapUtils.createBitmapFromAndroidBitmap(
                     LittleNeshanBitmapUtils.toBitmap(drawable)
             );
@@ -214,6 +243,9 @@ public class NavigationFragment extends Fragment {
     public void onDestroy() {
 
         NavigationForegroundService.stopService(getContext());
+
+        LocalBroadcastManager.getInstance(requireContext())
+                        .unregisterReceiver(stopNavigationForegroundService);
 
         super.onDestroy();
     }
