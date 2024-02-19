@@ -38,6 +38,7 @@ import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
 import ir.roudi.littleneshan.databinding.FragmentNavigationBinding;
+import ir.roudi.littleneshan.service.NavigationForegroundService;
 import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
 
 public class NavigationFragment extends Fragment {
@@ -73,6 +74,8 @@ public class NavigationFragment extends Fragment {
 
        var args = NavigationFragmentArgs.fromBundle(getArguments());
        viewModel.startNavigation(args.getStart(), args.getEnd());
+
+        NavigationForegroundService.startService(getContext());
     }
 
     private void setupViewModel() {
@@ -207,4 +210,11 @@ public class NavigationFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+
+        NavigationForegroundService.stopService(getContext());
+
+        super.onDestroy();
+    }
 }
