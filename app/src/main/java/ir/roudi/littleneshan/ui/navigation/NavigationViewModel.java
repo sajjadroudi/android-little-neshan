@@ -36,9 +36,6 @@ public class NavigationViewModel extends BaseViewModel {
     private final MutableLiveData<Event<Boolean>> _reachedDestination = new MutableLiveData<>(new Event<>(false));
     public final LiveData<Event<Boolean>> reachedDestination = _reachedDestination;
 
-    private final MutableLiveData<Event<Boolean>> _navigateUpAction = new MutableLiveData<>(new Event<>(false));
-    public final LiveData<Event<Boolean>> navigateUpAction = _navigateUpAction;
-
     private LocationModel startLocation;
     private LocationModel endLocation;
     private Disposable loadDirectionDisposable;
@@ -133,10 +130,6 @@ public class NavigationViewModel extends BaseViewModel {
             var reachedDestination = (remaining.size() <= 1);
             _reachedDestination.postValue(new Event<>(reachedDestination));
         }
-    }
-
-    public void navigateUp() {
-        _navigateUpAction.postValue(new Event<>(true));
     }
 
 }

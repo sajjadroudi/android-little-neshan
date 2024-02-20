@@ -170,15 +170,6 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
             updatePathOnMap(steps);
         });
 
-        viewModel.navigateUpAction.observe(getViewLifecycleOwner(), event -> {
-            event.doIfNotHandled(navigateUp -> {
-                if(navigateUp) {
-                    findNavController(NavigationFragment.this)
-                            .navigateUp();
-                }
-            });
-        });
-
     }
 
     private void updatePathOnMap(List<StepModel> remainingSteps) {

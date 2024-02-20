@@ -58,13 +58,28 @@ public abstract class BaseFragment<DB extends ViewDataBinding, VM extends BaseVi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        observerEvents();
+    }
+
+    private void observerEvents() {
         observeErrorMessage();
+        observeNavigateUpEvent();
     }
 
     private void observeErrorMessage() {
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
             event.doIfNotHandled(errorMessage -> {
                 Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+            });
+        });
+    }
+
+    private void observeNavigateUpEvent() {
+        viewModel.getNavigateUpEvent().observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(shouldNavigateUp -> {
+                if(shouldNavigateUp) {
+                    findNavController(BaseFragment.this).navigateUp();
+                }
             });
         });
     }
