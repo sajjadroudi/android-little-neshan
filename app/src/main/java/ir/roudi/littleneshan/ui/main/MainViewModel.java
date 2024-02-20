@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
+import ir.roudi.littleneshan.core.BaseViewModel;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.LocationRepository;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
@@ -18,7 +19,7 @@ import ir.roudi.littleneshan.data.repository.navigation.NavigationRepository;
 import ir.roudi.littleneshan.utils.Event;
 
 @HiltViewModel
-public class MainViewModel extends ViewModel {
+public class MainViewModel extends BaseViewModel {
 
     private final LocationRepository locationRepository;
 

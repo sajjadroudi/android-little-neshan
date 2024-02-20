@@ -11,9 +11,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.hilt.navigation.HiltViewModelFactory;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -49,6 +46,7 @@ import java.util.ArrayList;
 
 import ir.roudi.littleneshan.BuildConfig;
 import ir.roudi.littleneshan.R;
+import ir.roudi.littleneshan.core.BaseFragment;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
@@ -56,7 +54,7 @@ import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
 import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
 
-public class MainFragment extends Fragment {
+public class MainFragment extends BaseFragment<MainViewModel> {
 
     private final OnTurnOnLocationResultListener locationSettingsResultListener = new OnTurnOnLocationResultListener() {
 
@@ -82,8 +80,6 @@ public class MainFragment extends Fragment {
     private Marker destinationMarker;
     private Polyline routingPathPolyLine;
 
-    private MainViewModel viewModel;
-
     @Override
     public View onCreateView(
             LayoutInflater inflater,
@@ -96,19 +92,8 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setupViewModel();
-    }
-
-    private void setupViewModel() {
-        var backStackEntry = findNavController(this)
-                .getBackStackEntry(R.id.nav_main);
-
-        var factory = HiltViewModelFactory.create(requireContext(), backStackEntry);
-
-        viewModel = new ViewModelProvider(backStackEntry, factory)
-                .get(MainViewModel.class);
+    public Class<MainViewModel> getViewModelClass() {
+        return MainViewModel.class;
     }
 
     @Override
