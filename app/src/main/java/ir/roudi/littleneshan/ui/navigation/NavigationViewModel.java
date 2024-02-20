@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
+import ir.roudi.littleneshan.core.BaseViewModel;
 import ir.roudi.littleneshan.data.model.DirectionModel;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
@@ -21,7 +22,7 @@ import ir.roudi.littleneshan.data.repository.navigation.NavigationRepository;
 import ir.roudi.littleneshan.utils.Event;
 
 @HiltViewModel
-public class NavigationViewModel extends ViewModel {
+public class NavigationViewModel extends BaseViewModel {
 
     private final LocationRepository locationRepository;
     private final NavigationRepository navigationRepository;
@@ -37,8 +38,6 @@ public class NavigationViewModel extends ViewModel {
 
     private final MutableLiveData<Event<Boolean>> _navigateUpAction = new MutableLiveData<>(new Event<>(false));
     public final LiveData<Event<Boolean>> navigateUpAction = _navigateUpAction;
-
-    private final MutableLiveData<Event<Integer>> _errorMessage = new MutableLiveData<>(new Event<>(null));
 
     private LocationModel startLocation;
     private LocationModel endLocation;
@@ -138,14 +137,6 @@ public class NavigationViewModel extends ViewModel {
 
     public void navigateUp() {
         _navigateUpAction.postValue(new Event<>(true));
-    }
-
-    public void showError(@StringRes int errorMessage) {
-        _errorMessage.postValue(new Event<>(errorMessage));
-    }
-
-    public LiveData<Event<Integer>> getErrorMessage() {
-        return _errorMessage;
     }
 
 }

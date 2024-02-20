@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import ir.roudi.littleneshan.BuildConfig;
 import ir.roudi.littleneshan.R;
+import ir.roudi.littleneshan.core.BaseFragment;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
@@ -50,10 +51,7 @@ import ir.roudi.littleneshan.service.NavigationForegroundService;
 import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
 
-public class NavigationFragment extends Fragment {
-
-    private FragmentNavigationBinding binding;
-    private NavigationViewModel viewModel;
+public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, NavigationViewModel> {
 
     private Marker userLocationMarker;
     private Polyline remainingPathPolyline;
@@ -69,21 +67,19 @@ public class NavigationFragment extends Fragment {
         }
     };
 
-    @Nullable
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState
-    ) {
-        binding = FragmentNavigationBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    public int getLayoutId() {
+        return R.layout.fragment_navigation;
+    }
+
+    @Override
+    public Class<NavigationViewModel> getViewModelClass() {
+        return NavigationViewModel.class;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupViewModel();
 
         viewModel.startLocationUpdates(new OnTurnOnLocationResultListener() {
 
@@ -118,16 +114,6 @@ public class NavigationFragment extends Fragment {
                         stopNavigationForegroundService,
                         intentFilter
                 );
-    }
-
-    private void setupViewModel() {
-        var backStackEntry = findNavController(this)
-                .getBackStackEntry(R.id.nav_main);
-
-        var factory = HiltViewModelFactory.create(requireContext(), backStackEntry);
-
-        viewModel = new ViewModelProvider(backStackEntry, factory)
-                .get(NavigationViewModel.class);
     }
 
     @Override
@@ -193,11 +179,6 @@ public class NavigationFragment extends Fragment {
             });
         });
 
-        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
-            event.doIfNotHandled(errorMessage -> {
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
-            });
-        });
     }
 
     private void updatePathOnMap(List<StepModel> remainingSteps) {
