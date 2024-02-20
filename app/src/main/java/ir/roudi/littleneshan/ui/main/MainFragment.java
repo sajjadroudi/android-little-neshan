@@ -50,6 +50,7 @@ import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
 import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
+import ir.roudi.littleneshan.utils.MarkerUtils;
 
 public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewModel> {
 
@@ -193,21 +194,8 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
             binding.map.removeMarker(userMarker);
         }
         int icon = isCachedLocation ? R.drawable.ic_marker_off : R.drawable.ic_marker;
-        userMarker = new Marker(location.toLatLng(), buildUserMarkerStyle(icon));
+        userMarker = new Marker(location.toLatLng(), MarkerUtils.buildMarkerStyle(getContext(), icon));
         binding.map.addMarker(userMarker);
-    }
-
-    private MarkerStyle buildUserMarkerStyle(int iconResource) {
-        var markStCr = new MarkerStyleBuilder();
-        markStCr.setSize(30f);
-        var drawable = ContextCompat.getDrawable(requireContext(), iconResource);
-        if (drawable != null) {
-            var markerBitmap = BitmapUtils.createBitmapFromAndroidBitmap(
-                    LittleNeshanBitmapUtils.toBitmap(drawable)
-            );
-            markStCr.setBitmap(markerBitmap);
-        }
-        return markStCr.buildStyle();
     }
 
     private void markDestinationOnMap(LocationModel location) {
@@ -215,7 +203,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
             binding.map.removeMarker(destinationMarker);
         }
 
-        var style = buildUserMarkerStyle(R.drawable.ic_destination);
+        var style = MarkerUtils.buildMarkerStyle(getContext(), R.drawable.ic_destination);
         destinationMarker = new Marker(location.toLatLng(), style);
 
         binding.map.addMarker(destinationMarker);

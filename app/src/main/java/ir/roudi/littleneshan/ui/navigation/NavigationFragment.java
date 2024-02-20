@@ -50,6 +50,7 @@ import ir.roudi.littleneshan.databinding.FragmentNavigationBinding;
 import ir.roudi.littleneshan.service.NavigationForegroundService;
 import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
+import ir.roudi.littleneshan.utils.MarkerUtils;
 
 public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, NavigationViewModel> {
 
@@ -205,24 +206,10 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
             binding.map.removeMarker(userLocationMarker);
         }
 
-        userLocationMarker = new Marker(location.toLatLng(), createMarkerStyle());
+        var markerStyle = MarkerUtils.buildMarkerStyle(getContext(), R.drawable.ic_marker);
+        userLocationMarker = new Marker(location.toLatLng(), markerStyle);
 
         binding.map.addMarker(userLocationMarker);
-    }
-
-    private MarkerStyle createMarkerStyle() {
-        var markerBuilder = new MarkerStyleBuilder();
-        markerBuilder.setSize(30f);
-
-        var drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_marker);
-        if (drawable != null) {
-            var markerBitmap = BitmapUtils.createBitmapFromAndroidBitmap(
-                    LittleNeshanBitmapUtils.toBitmap(drawable)
-            );
-            markerBuilder.setBitmap(markerBitmap);
-        }
-
-        return markerBuilder.buildStyle();
     }
 
     private void setupMapSetting(int mapStyle) {
