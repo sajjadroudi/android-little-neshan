@@ -49,7 +49,7 @@ import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultList
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
-import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
+import ir.roudi.littleneshan.utils.LineUtils;
 import ir.roudi.littleneshan.utils.MarkerUtils;
 
 public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewModel> {
@@ -154,7 +154,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
         var path = PolylineEncoding.decode(pathString);
 
-        routingPathPolyLine = new Polyline(new ArrayList<>(path), buildLineStyle());
+        routingPathPolyLine = new Polyline(new ArrayList<>(path), LineUtils.buildLineStyle(getContext()));
         binding.map.addPolyline(routingPathPolyLine);
 
         // setup map camera to show whole path
@@ -168,15 +168,6 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                 new ScreenPos(mapWidth, mapWidth)
         );
         binding.map.moveToCameraBounds(latLngBounds, screenBounds, true, 0.5f);
-    }
-
-    private LineStyle buildLineStyle() {
-        var lineStCr = new LineStyleBuilder();
-        var color = new Color(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDim75));
-        lineStCr.setColor(color);
-        lineStCr.setWidth(10f);
-        lineStCr.setStretchFactor(0f);
-        return lineStCr.buildStyle();
     }
 
     private void showLocation(LocationModel location, boolean isCachedLocation) {

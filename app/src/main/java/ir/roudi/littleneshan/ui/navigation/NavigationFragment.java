@@ -10,28 +10,16 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.hilt.navigation.HiltViewModelFactory;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.carto.graphics.Color;
-import com.carto.styles.LineStyle;
-import com.carto.styles.LineStyleBuilder;
-import com.carto.styles.MarkerStyle;
-import com.carto.styles.MarkerStyleBuilder;
 import com.google.android.gms.common.api.ResolvableApiException;
 
 import org.neshan.common.utils.PolylineEncoding;
-import org.neshan.mapsdk.internal.utils.BitmapUtils;
 import org.neshan.mapsdk.model.Marker;
 import org.neshan.mapsdk.model.Polyline;
 
@@ -49,7 +37,7 @@ import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultList
 import ir.roudi.littleneshan.databinding.FragmentNavigationBinding;
 import ir.roudi.littleneshan.service.NavigationForegroundService;
 import ir.roudi.littleneshan.ui.MainActivity;
-import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
+import ir.roudi.littleneshan.utils.LineUtils;
 import ir.roudi.littleneshan.utils.MarkerUtils;
 
 public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, NavigationViewModel> {
@@ -183,7 +171,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
-        remainingPathPolyline = new Polyline(new ArrayList<>(pointsOfRemainingPath), buildLineStyle());
+        remainingPathPolyline = new Polyline(new ArrayList<>(pointsOfRemainingPath), LineUtils.buildLineStyle(getContext()));
 
         binding.map.addPolyline(remainingPathPolyline);
 
@@ -191,14 +179,6 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
         if (userLocation != null) {
             focusOnLocation(userLocation);
         }
-    }
-
-    private LineStyle buildLineStyle() {
-        var builder = new LineStyleBuilder();
-        builder.setColor(new Color(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDim75)));
-        builder.setWidth(10f);
-        builder.setStretchFactor(0f);
-        return builder.buildStyle();
     }
 
     private void updateLocationMarker(LocationModel location) {
