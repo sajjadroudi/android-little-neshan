@@ -2,7 +2,10 @@ package ir.roudi.littleneshan.ui.main;
 
 import static androidx.navigation.fragment.FragmentKt.findNavController;
 
+import android.Manifest;
+import android.content.Intent;
 import android.content.IntentSender;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.hilt.navigation.HiltViewModelFactory;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +30,12 @@ import com.carto.styles.MarkerStyle;
 import com.carto.styles.MarkerStyleBuilder;
 import com.carto.utils.BitmapUtils;
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import org.neshan.common.model.LatLng;
 import org.neshan.common.model.LatLngBounds;
@@ -37,6 +47,7 @@ import org.neshan.mapsdk.style.NeshanMapStyle;
 
 import java.util.ArrayList;
 
+import ir.roudi.littleneshan.BuildConfig;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
@@ -309,4 +320,46 @@ public class MainFragment extends Fragment {
 
         focusOnLocation(viewModel.startLocation);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        requestLocationPermissionIfNeeded();
+    }
+
+    private void requestLocationPermissionIfNeeded() {
+        Dexter.withContext(getContext())
+                .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        viewModel.startLocationUpdates(locationSettingsResultListener);
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        if(response.isPermanentlyDenied()) {
+                            openSettings();
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest request, PermissionToken token) {
+                        token.continuePermissionRequest();
+                    }
+
+                    private void openSettings() {
+                        Intent intent = new Intent();
+                        intent.setAction(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+                        intent.setData(uri);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                })
+                .check();
+    }
+
 }
