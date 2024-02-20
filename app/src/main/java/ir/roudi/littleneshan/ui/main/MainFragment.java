@@ -7,22 +7,14 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-
 import android.provider.Settings;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.carto.core.ScreenBounds;
 import com.carto.core.ScreenPos;
-import com.carto.graphics.Color;
-import com.carto.styles.LineStyle;
-import com.carto.styles.LineStyleBuilder;
-import com.carto.styles.MarkerStyle;
-import com.carto.styles.MarkerStyleBuilder;
-import com.carto.utils.BitmapUtils;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;

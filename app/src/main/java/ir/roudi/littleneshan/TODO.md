@@ -26,4 +26,5 @@
   - User marker should be bottom instead of center of the screen.
   - Just like Neshan.
 - Load last location when GPS is turned off.
+  - Need to cache last location in shared preferences.
 - Handle landscape.
