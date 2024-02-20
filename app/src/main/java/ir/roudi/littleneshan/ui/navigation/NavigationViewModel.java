@@ -36,8 +36,6 @@ public class NavigationViewModel extends BaseViewModel {
     private final MutableLiveData<Event<Boolean>> _reachedDestination = new MutableLiveData<>(new Event<>(false));
     public final LiveData<Event<Boolean>> reachedDestination = _reachedDestination;
 
-    private LocationModel startLocation;
-    private LocationModel endLocation;
     private Disposable loadDirectionDisposable;
     public final LiveData<LocationModel> userLocation;
     private int lastReachedStepIndex = 0;
@@ -57,14 +55,7 @@ public class NavigationViewModel extends BaseViewModel {
         locationRepository.subscribeToReceiveLocationUpdates(callback);
     }
 
-    public void stopLocationUpdates() {
-        locationRepository.unsubscribeFromReceivingLocationUpdates();
-    }
-
     public void startNavigation(LocationModel startLocation, LocationModel endLocation) {
-        this.startLocation = startLocation;
-        this.endLocation = endLocation;
-
         loadDirection(startLocation, endLocation, 0);
     }
 
