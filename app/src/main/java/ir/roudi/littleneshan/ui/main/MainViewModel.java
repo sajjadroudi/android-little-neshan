@@ -36,8 +36,6 @@ public class MainViewModel extends BaseViewModel {
     private final MutableLiveData<Event<Object>> _navigateToNavigationScreen = new MutableLiveData<>();
     public final LiveData<Event<Object>> navigateToNavigationScreen = _navigateToNavigationScreen;
 
-    private final MutableLiveData<Event<Integer>> _errorMessage = new MutableLiveData<>(new Event<>(null));
-
     private Disposable navigationPathDisposable;
     private Disposable addressDisposable;
 
@@ -113,14 +111,6 @@ public class MainViewModel extends BaseViewModel {
 
     public void navigateToNavigationScreen() {
         _navigateToNavigationScreen.postValue(new Event<>(new Object()));
-    }
-
-    public LiveData<Event<Integer>> getErrorMessage() {
-        return _errorMessage;
-    }
-
-    public void showError(@StringRes int stringResId) {
-        _errorMessage.postValue(new Event<>(stringResId));
     }
 
     @Override

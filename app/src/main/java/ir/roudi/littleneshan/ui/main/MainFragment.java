@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat;
 
 import android.provider.Settings;
 import android.view.View;
-import android.widget.Toast;
 
 import com.carto.core.ScreenBounds;
 import com.carto.core.ScreenPos;
@@ -271,11 +270,6 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
             });
         });
 
-        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
-            event.doIfNotHandled(errorMessage -> {
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
-            });
-        });
     }
 
     private void removeMapObjects() {
