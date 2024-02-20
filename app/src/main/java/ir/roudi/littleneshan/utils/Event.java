@@ -29,8 +29,8 @@ public class Event<T> {
     }
 
     public void doIfNotHandled(OnDoIfNotHandledListener<T> listener) {
-        if(!hasBeenHandled) {
-            hasBeenHandled = true;
+        var content = getContentIfNotHandled();
+        if(content != null) {
             listener.doIfNotHandled(content);
         }
     }

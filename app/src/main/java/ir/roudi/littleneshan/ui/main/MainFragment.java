@@ -2,6 +2,7 @@ package ir.roudi.littleneshan.ui.main;
 
 import static androidx.navigation.fragment.FragmentKt.findNavController;
 
+import android.content.IntentSender;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.carto.core.ScreenBounds;
 import com.carto.core.ScreenPos;
@@ -23,6 +25,7 @@ import com.carto.styles.LineStyleBuilder;
 import com.carto.styles.MarkerStyle;
 import com.carto.styles.MarkerStyleBuilder;
 import com.carto.utils.BitmapUtils;
+import com.google.android.gms.common.api.ResolvableApiException;
 
 import org.neshan.common.model.LatLng;
 import org.neshan.common.model.LatLngBounds;
@@ -36,8 +39,9 @@ import java.util.ArrayList;
 
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
-import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
+import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
+import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
 import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
 
@@ -82,10 +86,21 @@ public class MainFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        viewModel.startLocationUpdates(new OnTurnOnGpsCallback() {
+        viewModel.startLocationUpdates(new OnTurnOnLocationResultListener() {
+
             @Override
-            public void turnOnGps(Exception exception) {
-                // TODO
+            public void onRequireResolution(ResolvableApiException exception) throws IntentSender.SendIntentException {
+                exception.startResolutionForResult(getActivity(), MainActivity.LOCATION_SETTING_REQUEST_CODE);
+            }
+
+            @Override
+            public void onSettingsChangeUnavailable() {
+                viewModel.showError(R.string.inadequate_location_settings);
+            }
+
+            @Override
+            public void onSendIntentException(IntentSender.SendIntentException exception) {
+                viewModel.showError(R.string.something_went_wrong);
             }
         });
 
@@ -263,6 +278,12 @@ public class MainFragment extends Fragment {
                 removeMapObjects();
 
                 navController.navigate(R.id.navigation_destination, args);
+            });
+        });
+
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(errorMessage -> {
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
             });
         });
     }

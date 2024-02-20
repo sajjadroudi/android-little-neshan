@@ -1,6 +1,7 @@
 package ir.roudi.littleneshan.data.repository.location;
 
 import android.annotation.SuppressLint;
+import android.content.IntentSender;
 import android.location.Location;
 import android.os.Looper;
 
@@ -8,13 +9,17 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.concurrent.TimeUnit;
@@ -66,9 +71,9 @@ public class LocationRepositoryDefault implements LocationRepository {
 
     @Override
     public void subscribeToReceiveLocationUpdates(
-            OnTurnOnGpsCallback turnOnGpsCallback
+            OnTurnOnLocationResultListener resultListener
     ) {
-        subscribeToReceiveLocationUpdates(buildDefaultLocationRequest(), turnOnGpsCallback);
+        subscribeToReceiveLocationUpdates(buildDefaultLocationRequest(), resultListener);
     }
 
     // TODO: Create local model for LocationRequest
@@ -76,15 +81,34 @@ public class LocationRepositoryDefault implements LocationRepository {
     @SuppressLint("MissingPermission")
     public void subscribeToReceiveLocationUpdates(
             LocationRequest locationRequest,
-            OnTurnOnGpsCallback turnOnGpsCallback
+            OnTurnOnLocationResultListener resultListener
     ) {
-        // TODO: Maybe turnOnGpsCallback is not going to turn GPS on
-
         // TODO: Maybe need to unsubscribe first
 
         // TODO: Maybe need to cache same object of location settings response task
         buildDefaultLocationSettingsResponseTask(locationRequest)
-                .addOnFailureListener(turnOnGpsCallback::turnOnGps);
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if(!(e instanceof ApiException))
+                            return;
+
+                        final int statusCode = ((ApiException) e).getStatusCode();
+                        if(statusCode == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+                            try {
+                                if(e instanceof ResolvableApiException) {
+                                    final ResolvableApiException rae = (ResolvableApiException) e;
+                                    resultListener.onRequireResolution(rae);
+                                }
+                            } catch (IntentSender.SendIntentException sie) {
+                                resultListener.onSendIntentException(sie);
+                            }
+                        } else if(statusCode == LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE) {
+                            resultListener.onSettingsChangeUnavailable();
+                        }
+
+                    }
+                });
 
         locationClient.requestLocationUpdates(
                 locationRequest,

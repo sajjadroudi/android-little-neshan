@@ -1,5 +1,6 @@
 package ir.roudi.littleneshan.ui.main;
 
+import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,7 +13,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.LocationRepository;
-import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
+import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.data.repository.navigation.NavigationRepository;
 import ir.roudi.littleneshan.utils.Event;
 
@@ -33,6 +34,8 @@ public class MainViewModel extends ViewModel {
 
     private final MutableLiveData<Event<Object>> _navigateToNavigationScreen = new MutableLiveData<>();
     public final LiveData<Event<Object>> navigateToNavigationScreen = _navigateToNavigationScreen;
+
+    private final MutableLiveData<Event<Integer>> _errorMessage = new MutableLiveData<>(new Event<>(null));
 
     private Disposable navigationPathDisposable;
     private Disposable addressDisposable;
@@ -69,7 +72,7 @@ public class MainViewModel extends ViewModel {
         return userLocation;
     }
 
-    public void startLocationUpdates(OnTurnOnGpsCallback callback) {
+    public void startLocationUpdates(OnTurnOnLocationResultListener callback) {
         locationRepository.subscribeToReceiveLocationUpdates(callback);
     }
 
@@ -109,6 +112,14 @@ public class MainViewModel extends ViewModel {
 
     public void navigateToNavigationScreen() {
         _navigateToNavigationScreen.postValue(new Event<>(new Object()));
+    }
+
+    public LiveData<Event<Integer>> getErrorMessage() {
+        return _errorMessage;
+    }
+
+    public void showError(@StringRes int stringResId) {
+        _errorMessage.postValue(new Event<>(stringResId));
     }
 
     @Override

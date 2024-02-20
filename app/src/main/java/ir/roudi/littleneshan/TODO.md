@@ -5,10 +5,10 @@
 
 ## Feature
 - Add search bar.
-- Add foreground service.
 
 ## Improvement
 - Add data binding.
+- Clean up classes and refactor codes.
 - Clean up drawables and resources.
 - Define string resources.
 - Handle disconnection to the internet.
@@ -20,7 +20,10 @@
 - Add "return to the path" feature to the navigation screen.
 - Subscribe location with more precise config in the navigation screen.
 - Advance navigation.
+  - Like checking that the user is getting backward or he/she are far from the path.
 - Check di components.
 - Improve focus location.
   - User marker should be bottom instead of center of the screen.
   - Just like Neshan.
+- Load last location when GPS is turned off.
+- Handle landscape.

@@ -1,5 +1,6 @@
 package ir.roudi.littleneshan.ui.navigation;
 
+import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -15,7 +16,7 @@ import ir.roudi.littleneshan.data.model.DirectionModel;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
 import ir.roudi.littleneshan.data.repository.location.LocationRepository;
-import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
+import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.data.repository.navigation.NavigationRepository;
 import ir.roudi.littleneshan.utils.Event;
 
@@ -37,6 +38,8 @@ public class NavigationViewModel extends ViewModel {
     private final MutableLiveData<Event<Boolean>> _navigateUpAction = new MutableLiveData<>(new Event<>(false));
     public final LiveData<Event<Boolean>> navigateUpAction = _navigateUpAction;
 
+    private final MutableLiveData<Event<Integer>> _errorMessage = new MutableLiveData<>(new Event<>(null));
+
     private LocationModel startLocation;
     private LocationModel endLocation;
     private Disposable loadDirectionDisposable;
@@ -54,7 +57,7 @@ public class NavigationViewModel extends ViewModel {
         userLocation = locationRepository.getCurrentLocation();
     }
 
-    public void startLocationUpdates(OnTurnOnGpsCallback callback) {
+    public void startLocationUpdates(OnTurnOnLocationResultListener callback) {
         locationRepository.subscribeToReceiveLocationUpdates(callback);
     }
 
@@ -135,6 +138,14 @@ public class NavigationViewModel extends ViewModel {
 
     public void navigateUp() {
         _navigateUpAction.postValue(new Event<>(true));
+    }
+
+    public void showError(@StringRes int errorMessage) {
+        _errorMessage.postValue(new Event<>(errorMessage));
+    }
+
+    public LiveData<Event<Integer>> getErrorMessage() {
+        return _errorMessage;
     }
 
 }

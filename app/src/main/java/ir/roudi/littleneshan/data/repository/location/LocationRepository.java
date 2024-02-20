@@ -15,13 +15,13 @@ public interface LocationRepository {
     LiveData<LocationModel> getCurrentLocation();
 
     void subscribeToReceiveLocationUpdates(
-            OnTurnOnGpsCallback turnOnGpsCallback
+            OnTurnOnLocationResultListener resultListener
     );
 
     @SuppressLint("MissingPermission")
     void subscribeToReceiveLocationUpdates(
             LocationRequest locationRequest,
-            OnTurnOnGpsCallback turnOnGpsCallback
+            OnTurnOnLocationResultListener resultListener
     );
 
     void unsubscribeFromReceivingLocationUpdates();

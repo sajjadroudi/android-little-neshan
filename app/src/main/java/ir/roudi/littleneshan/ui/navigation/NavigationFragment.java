@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -27,6 +28,7 @@ import com.carto.styles.LineStyle;
 import com.carto.styles.LineStyleBuilder;
 import com.carto.styles.MarkerStyle;
 import com.carto.styles.MarkerStyleBuilder;
+import com.google.android.gms.common.api.ResolvableApiException;
 
 import org.neshan.common.utils.PolylineEncoding;
 import org.neshan.mapsdk.internal.utils.BitmapUtils;
@@ -42,9 +44,10 @@ import ir.roudi.littleneshan.BuildConfig;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
-import ir.roudi.littleneshan.data.repository.location.OnTurnOnGpsCallback;
+import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.databinding.FragmentNavigationBinding;
 import ir.roudi.littleneshan.service.NavigationForegroundService;
+import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
 
 public class NavigationFragment extends Fragment {
@@ -82,10 +85,21 @@ public class NavigationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setupViewModel();
 
-        viewModel.startLocationUpdates(new OnTurnOnGpsCallback() {
+        viewModel.startLocationUpdates(new OnTurnOnLocationResultListener() {
+
             @Override
-            public void turnOnGps(Exception exception) {
-                // TODO
+            public void onRequireResolution(ResolvableApiException exception) throws IntentSender.SendIntentException {
+                exception.startResolutionForResult(getActivity(), MainActivity.LOCATION_SETTING_REQUEST_CODE);
+            }
+
+            @Override
+            public void onSettingsChangeUnavailable() {
+                viewModel.showError(R.string.inadequate_location_settings);
+            }
+
+            @Override
+            public void onSendIntentException(IntentSender.SendIntentException exception) {
+                viewModel.showError(R.string.something_went_wrong);
             }
         });
 
@@ -176,6 +190,12 @@ public class NavigationFragment extends Fragment {
                     findNavController(NavigationFragment.this)
                             .navigateUp();
                 }
+            });
+        });
+
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(errorMessage -> {
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
             });
         });
     }
