@@ -54,7 +54,7 @@ import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
 import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
 
-public class MainFragment extends BaseFragment<MainViewModel> {
+public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewModel> {
 
     private final OnTurnOnLocationResultListener locationSettingsResultListener = new OnTurnOnLocationResultListener() {
 
@@ -81,19 +81,13 @@ public class MainFragment extends BaseFragment<MainViewModel> {
     private Polyline routingPathPolyLine;
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-        // TODO: Add appropriate widow flags to all screens
-        binding = FragmentMainBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    public Class<MainViewModel> getViewModelClass() {
+        return MainViewModel.class;
     }
 
     @Override
-    public Class<MainViewModel> getViewModelClass() {
-        return MainViewModel.class;
+    public int getLayoutId() {
+        return R.layout.fragment_main;
     }
 
     @Override
