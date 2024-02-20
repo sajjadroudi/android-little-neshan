@@ -47,6 +47,24 @@ import ir.roudi.littleneshan.utils.LittleNeshanBitmapUtils;
 
 public class MainFragment extends Fragment {
 
+    private final OnTurnOnLocationResultListener locationSettingsResultListener = new OnTurnOnLocationResultListener() {
+
+        @Override
+        public void onRequireResolution(ResolvableApiException exception) throws IntentSender.SendIntentException {
+            exception.startResolutionForResult(getActivity(), MainActivity.LOCATION_SETTING_REQUEST_CODE);
+        }
+
+        @Override
+        public void onSettingsChangeUnavailable() {
+            viewModel.showError(R.string.inadequate_location_settings);
+        }
+
+        @Override
+        public void onSendIntentException(IntentSender.SendIntentException exception) {
+            viewModel.showError(R.string.something_went_wrong);
+        }
+    };
+
     private FragmentMainBinding binding;
 
     private Marker userMarker;
@@ -86,23 +104,7 @@ public class MainFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        viewModel.startLocationUpdates(new OnTurnOnLocationResultListener() {
-
-            @Override
-            public void onRequireResolution(ResolvableApiException exception) throws IntentSender.SendIntentException {
-                exception.startResolutionForResult(getActivity(), MainActivity.LOCATION_SETTING_REQUEST_CODE);
-            }
-
-            @Override
-            public void onSettingsChangeUnavailable() {
-                viewModel.showError(R.string.inadequate_location_settings);
-            }
-
-            @Override
-            public void onSendIntentException(IntentSender.SendIntentException exception) {
-                viewModel.showError(R.string.something_went_wrong);
-            }
-        });
+        viewModel.startLocationUpdates(locationSettingsResultListener);
 
         // TODO: Maybe it's better to observe only the first item.
         viewModel.userLocation.observe(getViewLifecycleOwner(), location -> {
@@ -110,6 +112,8 @@ public class MainFragment extends Fragment {
         });
 
         binding.btnLocation.setOnClickListener(v -> {
+            viewModel.startLocationUpdates(locationSettingsResultListener);
+
             var location = viewModel.userLocation.getValue();
             if (location != null) {
                 showLocation(location.getLocation(), location.isCached());
