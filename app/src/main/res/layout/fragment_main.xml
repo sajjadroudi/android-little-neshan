@@ -49,17 +49,6 @@
                 android:tint="@color/colorPrimary"
                 app:srcCompat="@drawable/ic_location" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_navigation"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_marginBottom="16dp"
-                android:background="@drawable/btn_gray_light"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="10dp"
-                android:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_navigation" />
         </LinearLayout>
 
     </FrameLayout>
