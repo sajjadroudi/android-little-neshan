@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
+import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.core.BaseViewModel;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.LocationRepository;
@@ -81,7 +82,7 @@ public class MainViewModel extends BaseViewModel {
         var source = userLocation.getValue();
 
         if (source == null || source.getLocation() == null || destination == null) {
-            // TODO: Handle error
+            showError(R.string.something_went_wrong);
             return;
         }
 
