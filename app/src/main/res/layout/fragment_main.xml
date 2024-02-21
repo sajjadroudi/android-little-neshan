@@ -5,7 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="viewmodel"
+            type="ir.roudi.littleneshan.ui.main.MainViewModel" />
     </data>
 
     <FrameLayout
@@ -35,7 +37,8 @@
                 android:focusable="true"
                 android:padding="10dp"
                 android:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_night" />
+                app:srcCompat="@drawable/ic_night"
+                android:onClick="@{() -> viewmodel.switchTheme()}"/>
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btn_location"

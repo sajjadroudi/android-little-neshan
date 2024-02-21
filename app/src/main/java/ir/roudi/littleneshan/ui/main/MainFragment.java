@@ -23,10 +23,8 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
-import org.neshan.common.model.LatLng;
 import org.neshan.common.model.LatLngBounds;
 import org.neshan.common.utils.PolylineEncoding;
-import org.neshan.mapsdk.MapView;
 import org.neshan.mapsdk.model.Marker;
 import org.neshan.mapsdk.model.Polyline;
 import org.neshan.mapsdk.style.NeshanMapStyle;
@@ -66,58 +64,9 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
         startLocationUpdates(false, false);
 
-        // TODO: Maybe it's better to observe only the first item.
-        viewModel.userLocation.observe(getViewLifecycleOwner(), location -> {
-            showLocation(location.getLocation(), location.isCached());
-        });
+        registerObservers();
 
-        binding.btnLocation.setOnClickListener(v -> {
-            startLocationUpdates(true, true);
-
-            var location = viewModel.userLocation.getValue();
-            if (location != null) {
-                showLocation(location.getLocation(), location.isCached());
-            }
-        });
-
-        binding.btnTheme.setOnClickListener(v -> {
-            boolean isNightMode = (binding.map.getMapStyle() == NeshanMapStyle.NESHAN);
-
-            var newTheme = isNightMode ? NeshanMapStyle.NESHAN_NIGHT : NeshanMapStyle.NESHAN;
-            binding.map.setMapStyle(newTheme);
-
-            var icon = isNightMode ? R.drawable.ic_light : R.drawable.ic_night;
-            binding.btnTheme.setImageResource(icon);
-
-            // TODO: Change color of buttons
-        });
-
-        binding.map.setOnMapLongClickListener(new MapView.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                markDestinationOnMap(LocationModel.from(latLng));
-            }
-        });
-
-        viewModel.navigationPath.observe(getViewLifecycleOwner(), pathEvent -> {
-            pathEvent.doIfNotHandled(this::showPathOnMap);
-        });
-
-        viewModel.address.observe(getViewLifecycleOwner(), addressEvent -> {
-            addressEvent.doIfNotHandled(address -> {
-                var bundle = new DestinationDetailsBottomSheetArgs.Builder(
-                        address.getTitle(),
-                        address.getDuration(),
-                        address.getDistance(),
-                        address.getAddress()
-                )
-                        .build()
-                        .toBundle();
-
-                findNavController(MainFragment.this)
-                        .navigate(R.id.destination_detail, bundle);
-            });
-        });
+        registerOnMapClickListener();
     }
 
     private void startLocationUpdates(boolean showTurnOnLocationDialog, boolean showError) {
@@ -146,6 +95,123 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                     viewModel.showError(R.string.something_went_wrong);
                 }
             }
+        });
+    }
+
+    private void registerObservers() {
+        registerUserLocationObserver();
+        registerSwitchThemeObserver();
+        registerFocusOnUserLocationObserver();
+        registerNavigationPathObserver();
+        registerNavigateToDestinationDetailsBottomSheet();
+        registerWhenNavigateToNavigationScreen();
+        registerNavigateToNavigationScreen();
+    }
+
+    private void registerUserLocationObserver() {
+        // TODO: Maybe it's better to observe only the first item.
+        viewModel.userLocation.observe(getViewLifecycleOwner(), location -> {
+            showLocation(location.getLocation(), location.isCached());
+        });
+    }
+
+    private void registerSwitchThemeObserver() {
+        viewModel.getSwitchThemeEvent().observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(switchTheme -> {
+                if(switchTheme) {
+                    boolean isNightMode = (binding.map.getMapStyle() == NeshanMapStyle.NESHAN);
+
+                    var newTheme = isNightMode ? NeshanMapStyle.NESHAN_NIGHT : NeshanMapStyle.NESHAN;
+                    binding.map.setMapStyle(newTheme);
+
+                    var icon = isNightMode ? R.drawable.ic_light : R.drawable.ic_night;
+                    binding.btnTheme.setImageResource(icon);
+
+                    // TODO: Change color of buttons
+                }
+            });
+        });
+    }
+
+    private void registerFocusOnUserLocationObserver() {
+        viewModel.getFocusOnUserLocationEvent().observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(focusOnUserLocation -> {
+                requestLocationPermission(true, true, true);
+
+                var location = viewModel.userLocation.getValue();
+                if (location != null) {
+                    showLocation(location.getLocation(), location.isCached());
+                }
+            });
+        });
+    }
+
+    private void registerNavigationPathObserver() {
+        viewModel.navigationPath.observe(getViewLifecycleOwner(), pathEvent -> {
+            pathEvent.doIfNotHandled(this::showPathOnMap);
+        });
+    }
+
+    private void registerNavigateToDestinationDetailsBottomSheet() {
+        viewModel.address.observe(getViewLifecycleOwner(), addressEvent -> {
+            addressEvent.doIfNotHandled(address -> {
+                var bundle = new DestinationDetailsBottomSheetArgs.Builder(
+                        address.getTitle(),
+                        address.getDuration(),
+                        address.getDistance(),
+                        address.getAddress()
+                )
+                        .build()
+                        .toBundle();
+
+                findNavController(MainFragment.this)
+                        .navigate(R.id.destination_detail, bundle);
+            });
+        });
+    }
+
+    private void registerWhenNavigateToNavigationScreen() {
+        findNavController(this)
+                .getCurrentBackStackEntry()
+                .getSavedStateHandle()
+                .getLiveData(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION)
+                .observe(getViewLifecycleOwner(), o -> {
+                    if (o instanceof Boolean) {
+                        boolean doesStartNavigation = (Boolean) o;
+                        if(doesStartNavigation) {
+                            viewModel.navigateToNavigationScreen();
+                        }
+                    }
+                });
+    }
+
+    private void registerNavigateToNavigationScreen() {
+        viewModel.navigateToNavigationScreen.observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(content -> {
+                var navController = findNavController(MainFragment.this);
+
+                navController.getCurrentBackStackEntry()
+                        .getSavedStateHandle()
+                        .remove(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION);
+
+                var args = new NavigationFragmentArgs.Builder(
+                        binding.map.getMapStyle(),
+                        viewModel.startLocation,
+                        viewModel.endLocation
+                )
+                        .build()
+                        .toBundle();
+
+                removeMapObjects();
+
+                navController.navigate(R.id.navigation_destination, args);
+            });
+        });
+    }
+
+    private void registerOnMapClickListener() {
+        binding.map.setOnMapLongClickListener(latLng -> {
+            markDestinationOnMap(LocationModel.from(latLng));
         });
     }
 
@@ -216,42 +282,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        var navController = findNavController(this);
-
-        navController
-                .getCurrentBackStackEntry()
-                .getSavedStateHandle()
-                .getLiveData(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION)
-                .observe(getViewLifecycleOwner(), o -> {
-                    if (o instanceof Boolean) {
-                        boolean doesStartNavigation = (Boolean) o;
-                        if(doesStartNavigation) {
-                            viewModel.navigateToNavigationScreen();
-                        }
-                    }
-                });
-
-        viewModel.navigateToNavigationScreen.observe(getViewLifecycleOwner(), event -> {
-            event.doIfNotHandled(content -> {
-                navController.getCurrentBackStackEntry()
-                        .getSavedStateHandle()
-                        .remove(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION);
-
-                var args = new NavigationFragmentArgs.Builder(
-                        binding.map.getMapStyle(),
-                        viewModel.startLocation,
-                        viewModel.endLocation
-                )
-                        .build()
-                        .toBundle();
-
-                removeMapObjects();
-
-                navController.navigate(R.id.navigation_destination, args);
-            });
-        });
-
+        binding.setViewmodel(viewModel);
     }
 
     private void removeMapObjects() {
@@ -276,21 +307,23 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     public void onResume() {
         super.onResume();
 
-        requestLocationPermissionIfNeeded();
+        requestLocationPermission(false, false, false);
     }
 
-    private void requestLocationPermissionIfNeeded() {
+    private void requestLocationPermission(
+            boolean openSettings, boolean showTurnOnLocationDialog, boolean showError
+    ) {
         Dexter.withContext(getContext())
                 .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
-                        startLocationUpdates(true, true);
+                        startLocationUpdates(showTurnOnLocationDialog, showError);
                     }
 
                     @Override
                     public void onPermissionDenied(PermissionDeniedResponse response) {
-                        if(response.isPermanentlyDenied()) {
+                        if(response.isPermanentlyDenied() && openSettings) {
                             openSettings();
                         }
                     }
@@ -302,8 +335,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
                     private void openSettings() {
                         Intent intent = new Intent();
-                        intent.setAction(
-                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                         Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
                         intent.setData(uri);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

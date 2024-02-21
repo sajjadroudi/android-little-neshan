@@ -1,10 +1,8 @@
 package ir.roudi.littleneshan.ui.main;
 
-import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
@@ -35,6 +33,10 @@ public class MainViewModel extends BaseViewModel {
 
     private final MutableLiveData<Event<Object>> _navigateToNavigationScreen = new MutableLiveData<>();
     public final LiveData<Event<Object>> navigateToNavigationScreen = _navigateToNavigationScreen;
+
+    private final MutableLiveData<Event<Boolean>> _switchTheme = new MutableLiveData<>(new Event<>(false));
+
+    private final MutableLiveData<Event<Boolean>> focusOnUserLocation = new MutableLiveData<>(new Event<>(false));
 
     private Disposable navigationPathDisposable;
     private Disposable addressDisposable;
@@ -111,6 +113,22 @@ public class MainViewModel extends BaseViewModel {
 
     public void navigateToNavigationScreen() {
         _navigateToNavigationScreen.postValue(new Event<>(new Object()));
+    }
+
+    public LiveData<Event<Boolean>> getSwitchThemeEvent() {
+        return _switchTheme;
+    }
+
+    public void switchTheme() {
+        _switchTheme.postValue(new Event<>(true));
+    }
+
+    public LiveData<Event<Boolean>> getFocusOnUserLocationEvent() {
+        return focusOnUserLocation;
+    }
+
+    public void focusOnUserLocation() {
+        focusOnUserLocation.postValue(new Event<>(true));
     }
 
     @Override
