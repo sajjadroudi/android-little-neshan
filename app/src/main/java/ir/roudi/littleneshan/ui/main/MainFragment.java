@@ -50,8 +50,6 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
         startLocationUpdates(false, false);
 
-        registerObservers();
-
         registerOnMapClickListener();
     }
 
@@ -84,6 +82,18 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
         });
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        map = new LittleNeshanMap(binding.map);
+
+        binding.setViewmodel(viewModel);
+
+        registerObservers();
+
+    }
+
     private void registerObservers() {
         registerUserLocationObserver();
         registerSwitchThemeObserver();
@@ -95,9 +105,8 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     }
 
     private void registerUserLocationObserver() {
-        // TODO: Maybe it's better to observe only the first item.
         viewModel.getUserLocation().observe(getViewLifecycleOwner(), location -> {
-            showLocation(location.getLocation(), location.isCached());
+            map.markUserOnMap(location.getLocation(), location.isCached());
         });
     }
 
@@ -160,13 +169,18 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     }
 
     private void registerWhenNavigateToNavigationScreen() {
-        findNavController(this)
-                .getCurrentBackStackEntry()
+        var currentBackStackEntry = findNavController(this)
+                .getCurrentBackStackEntry();
+
+        if(currentBackStackEntry == null)
+            return;
+
+        currentBackStackEntry
                 .getSavedStateHandle()
                 .getLiveData(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION)
-                .observe(getViewLifecycleOwner(), o -> {
-                    if (o instanceof Boolean) {
-                        boolean doesStartNavigation = (Boolean) o;
+                .observe(getViewLifecycleOwner(), object -> {
+                    if (object instanceof Boolean) {
+                        boolean doesStartNavigation = (Boolean) object;
                         if(doesStartNavigation) {
                             viewModel.navigateToNavigationScreen();
                         }
@@ -182,9 +196,13 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
                 var navController = findNavController(MainFragment.this);
 
-                navController.getCurrentBackStackEntry()
+                var backStackEntry = navController.getCurrentBackStackEntry();
+
+                if(backStackEntry != null) {
+                    backStackEntry
                         .getSavedStateHandle()
                         .remove(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION);
+                }
 
                 var args = new NavigationFragmentArgs.Builder(
                         map.getMapStyle(),
@@ -215,16 +233,9 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     }
 
     @Override
-    public void onPause() {
+    public void onStop() {
         viewModel.stopLocationUpdates();
-        super.onPause();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        map = new LittleNeshanMap(binding.map);
-        binding.setViewmodel(viewModel);
+        super.onStop();
     }
 
     private void requestLocationPermission(
