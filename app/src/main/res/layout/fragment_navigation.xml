@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="viewmodel"
+            type="ir.roudi.littleneshan.ui.navigation.NavigationViewModel" />
+    </data>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -51,7 +57,8 @@
                 android:paddingHorizontal="30dp"
                 android:text="پایان"
                 android:textColor="@color/colorWhite"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:onClick="@{() -> viewmodel.navigateUp()}" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/distance"

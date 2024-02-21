@@ -1,9 +1,7 @@
 package ir.roudi.littleneshan.ui.navigation;
 
-import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
@@ -27,17 +25,18 @@ public class NavigationViewModel extends BaseViewModel {
     private final LocationRepository locationRepository;
     private final NavigationRepository navigationRepository;
 
-    private final MutableLiveData<DirectionModel> _direction = new MutableLiveData<>();
-    public final LiveData<DirectionModel> direction = _direction;
+    private final MutableLiveData<DirectionModel> direction = new MutableLiveData<>();
 
-    private final MutableLiveData<List<StepModel>> _remainingSteps = new MutableLiveData<>(List.of());
-    public final LiveData<List<StepModel>> remainingSteps = _remainingSteps;
+    private final MutableLiveData<List<StepModel>> remainingSteps = new MutableLiveData<>(List.of());
 
-    private final MutableLiveData<Event<Boolean>> _reachedDestination = new MutableLiveData<>(new Event<>(false));
-    public final LiveData<Event<Boolean>> reachedDestination = _reachedDestination;
+    private final MutableLiveData<Event<Boolean>> reachedDestination = new MutableLiveData<>(new Event<>(false));
+
+    private final MutableLiveData<Event<LocationModel>> focusOnUserLocationEvent = new MutableLiveData<>(new Event<>(null));
+
+    private final LiveData<LocationModel> userLocation;
 
     private Disposable loadDirectionDisposable;
-    public final LiveData<LocationModel> userLocation;
+
     private int lastReachedStepIndex = 0;
 
     @Inject
@@ -73,9 +72,9 @@ public class NavigationViewModel extends BaseViewModel {
                 .subscribe(direction -> {
                     lastReachedStepIndex = 0;
 
-                    _remainingSteps.postValue(direction.getSteps());
+                    remainingSteps.postValue(direction.getSteps());
 
-                    _direction.postValue(direction);
+                    this.direction.postValue(direction);
                 });
     }
 
@@ -116,11 +115,35 @@ public class NavigationViewModel extends BaseViewModel {
             lastReachedStepIndex++;
 
             var remaining = steps.subList(lastReachedStepIndex, steps.size());
-            _remainingSteps.postValue(remaining);
+            remainingSteps.postValue(remaining);
 
             var reachedDestination = (remaining.size() <= 1);
-            _reachedDestination.postValue(new Event<>(reachedDestination));
+            this.reachedDestination.postValue(new Event<>(reachedDestination));
         }
     }
 
+    public void focusOnUserLocation() {
+        var location = userLocation.getValue();
+        focusOnUserLocationEvent.postValue(new Event<>(location));
+    }
+
+    public LiveData<Event<LocationModel>> getFocusOnUserLocationEvent() {
+        return focusOnUserLocationEvent;
+    }
+
+    public LiveData<DirectionModel> getDirection() {
+        return direction;
+    }
+
+    public LiveData<List<StepModel>> getRemainingSteps() {
+        return remainingSteps;
+    }
+
+    public LiveData<Event<Boolean>> getReachedDestination() {
+        return reachedDestination;
+    }
+
+    public LiveData<LocationModel> getUserLocation() {
+        return userLocation;
+    }
 }

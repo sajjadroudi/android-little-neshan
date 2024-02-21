@@ -19,12 +19,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 
-import java.util.List;
-
 import ir.roudi.littleneshan.BuildConfig;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.core.BaseFragment;
-import ir.roudi.littleneshan.data.model.StepModel;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.databinding.FragmentNavigationBinding;
 import ir.roudi.littleneshan.service.NavigationForegroundService;
@@ -59,6 +56,16 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        startLocationUpdates();
+
+        registerBroadcastReceiver();
+
+        NavigationForegroundService.startService(getContext());
+
+        startNavigation();
+    }
+
+    private void startLocationUpdates() {
         viewModel.startLocationUpdates(new OnTurnOnLocationResultListener() {
 
             @Override
@@ -76,13 +83,6 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
                 viewModel.showError(R.string.something_went_wrong);
             }
         });
-
-        var args = NavigationFragmentArgs.fromBundle(getArguments());
-        viewModel.startNavigation(args.getStart(), args.getEnd());
-
-        registerBroadcastReceiver();
-
-        NavigationForegroundService.startService(getContext());
     }
 
     private void registerBroadcastReceiver() {
@@ -94,18 +94,20 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
                 );
     }
 
+    private void startNavigation() {
+        var args = NavigationFragmentArgs.fromBundle(getArguments());
+        viewModel.startNavigation(args.getStart(), args.getEnd());
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        var args = NavigationFragmentArgs.fromBundle(getArguments());
 
-        map = new NavigationMap(binding.map, args.getMapStyle());
+        binding.setViewmodel(viewModel);
 
-        binding.stop.setOnClickListener(v -> {
-            viewModel.navigateUp();
-        });
+        setupNavigationMap();
 
-        viewModel.direction.observe(getViewLifecycleOwner(), direction -> {
+        viewModel.getDirection().observe(getViewLifecycleOwner(), direction -> {
             if (direction == null)
                 return;
 
@@ -121,7 +123,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
             binding.address.setText(text);
         });
 
-        viewModel.userLocation.observe(getViewLifecycleOwner(), userLocation -> {
+        viewModel.getUserLocation().observe(getViewLifecycleOwner(), userLocation -> {
             if (userLocation == null)
                 return;
 
@@ -130,7 +132,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
             map.markUserOnMap(userLocation);
         });
 
-        viewModel.reachedDestination.observe(getViewLifecycleOwner(), event -> {
+        viewModel.getReachedDestination().observe(getViewLifecycleOwner(), event -> {
             event.doIfNotHandled(reachedDestination -> {
                 if (reachedDestination) {
                     Toast.makeText(getContext(), "به مقصد رسیدید!", Toast.LENGTH_SHORT).show();
@@ -141,22 +143,24 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
             });
         });
 
-        viewModel.remainingSteps.observe(getViewLifecycleOwner(), steps -> {
+        viewModel.getRemainingSteps().observe(getViewLifecycleOwner(), steps -> {
             if (steps == null)
                 return;
 
-            updatePathOnMap(steps);
+            map.showRemainingPathOnMap(steps);
+            viewModel.focusOnUserLocation();
         });
 
+        viewModel.getFocusOnUserLocationEvent().observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(userLocation -> {
+                map.focusOnLocation(userLocation);
+            });
+        });
     }
 
-    private void updatePathOnMap(List<StepModel> remainingSteps) {
-        map.showRemainingPathOnMap(remainingSteps);
-
-        var userLocation = viewModel.userLocation.getValue();
-        if (userLocation != null) {
-            map.focusOnLocation(userLocation);
-        }
+    private void setupNavigationMap() {
+        var args = NavigationFragmentArgs.fromBundle(getArguments());
+        map = new NavigationMap(binding.map, args.getMapStyle());
     }
 
     @Override
