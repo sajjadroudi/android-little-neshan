@@ -2,4 +2,5 @@
     <string name="app_name">Little Neshan</string>
     <string name="something_went_wrong">خطایی رخ داد!</string>
     <string name="inadequate_location_settings">تنظیمات مکان ناکافی است و در اینجا قابل رفع نیست. در تنظیمات رفع کنید.</string>
+    <string name="connection_to_server_error">خطا در اتصال به سرور</string>
 </resources>

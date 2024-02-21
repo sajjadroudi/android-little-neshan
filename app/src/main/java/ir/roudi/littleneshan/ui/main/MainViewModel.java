@@ -8,14 +8,19 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.core.BaseViewModel;
+import ir.roudi.littleneshan.data.model.AddressModel;
+import ir.roudi.littleneshan.data.model.DirectionModel;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.LocationRepository;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.data.repository.navigation.NavigationRepository;
 import ir.roudi.littleneshan.utils.Event;
+import ir.roudi.littleneshan.utils.ExceptionUtils;
 
 @HiltViewModel
 public class MainViewModel extends BaseViewModel {
@@ -89,27 +94,63 @@ public class MainViewModel extends BaseViewModel {
         startLocation = source.getLocation();
         endLocation = destination;
 
-        // TODO: Handle timeout situation
-        navigationPathDisposable = navigationRepository
+        navigationRepository
                 .getDirection(startLocation, endLocation, 0)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(direction -> {
-                    navigationPath.postValue(new Event<>(direction.getOverviewPolyline()));
+                .subscribe(new SingleObserver<>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        navigationPathDisposable = d;
+                    }
 
-                    // TODO: Handle worse case scenarios when data gotten from server is null or invalid.
-                    addressDisposable = navigationRepository
-                            .getAddress(endLocation)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(address -> {
-                                var routeName = (address.getRouteName() == null) ? "معبر بدون نام" : address.getRouteName();
-                                var value = new AddressUiModel(
-                                        routeName,
-                                        direction.getDuration().getText(),
-                                        direction.getDistance().getText(),
-                                        address.getAddress()
-                                );
-                                destinationAddress.postValue(new Event<>(value));
-                            });
+                    @Override
+                    public void onSuccess(@NonNull DirectionModel direction) {
+                        navigationPath.postValue(new Event<>(direction.getOverviewPolyline()));
+
+                        fetchAddress(direction);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        if(ExceptionUtils.isDisconnectedToInternet(e)) {
+                            showError(R.string.connection_to_server_error);
+                        } else {
+                            showError(R.string.something_went_wrong);
+                        }
+                    }
+                });
+    }
+
+    private void fetchAddress(DirectionModel direction) {
+        navigationRepository
+                .getAddress(endLocation)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<AddressModel>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        addressDisposable = d;
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull AddressModel address) {
+                        var routeName = (address.getRouteName() == null) ? "معبر بدون نام" : address.getRouteName();
+                        var value = new AddressUiModel(
+                                routeName,
+                                direction.getDuration().getText(),
+                                direction.getDistance().getText(),
+                                address.getAddress()
+                        );
+                        destinationAddress.postValue(new Event<>(value));
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        if(ExceptionUtils.isDisconnectedToInternet(e)) {
+                            showError(R.string.connection_to_server_error);
+                        } else {
+                            showError(R.string.something_went_wrong);
+                        }
+                    }
                 });
     }
 
