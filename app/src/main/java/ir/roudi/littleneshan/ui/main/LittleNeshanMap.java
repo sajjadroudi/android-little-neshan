@@ -31,6 +31,13 @@ public class LittleNeshanMap {
 
     public LittleNeshanMap(MapView map) {
         this.map = map;
+
+        setupMap();
+    }
+
+    private void setupMap() {
+        map.setTrafficEnabled(true);
+        map.setPoiEnabled(true);
     }
 
     public void showPathOnMap(String pathPolyline, LocationModel start, LocationModel end) {

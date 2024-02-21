@@ -19,33 +19,22 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.api.ResolvableApiException;
 
-import org.neshan.common.utils.PolylineEncoding;
-import org.neshan.mapsdk.model.Marker;
-import org.neshan.mapsdk.model.Polyline;
-
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import ir.roudi.littleneshan.BuildConfig;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.core.BaseFragment;
-import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.databinding.FragmentNavigationBinding;
 import ir.roudi.littleneshan.service.NavigationForegroundService;
 import ir.roudi.littleneshan.ui.MainActivity;
-import ir.roudi.littleneshan.utils.LineUtils;
-import ir.roudi.littleneshan.utils.MarkerUtils;
 
 public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, NavigationViewModel> {
 
-    private Marker userLocationMarker;
-    private Polyline remainingPathPolyline;
-
     public static final String ACTION_STOP_NAVIGATION_SERVICE = BuildConfig.APPLICATION_ID + ".ACTION_STOP_NAVIGATION_SERVICE";
+
+    private NavigationMap map;
 
     private final BroadcastReceiver stopNavigationForegroundService = new BroadcastReceiver() {
         @Override
@@ -110,7 +99,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
         super.onViewCreated(view, savedInstanceState);
         var args = NavigationFragmentArgs.fromBundle(getArguments());
 
-        setupMapSetting(args.getMapStyle());
+        map = new NavigationMap(binding.map, args.getMapStyle());
 
         binding.stop.setOnClickListener(v -> {
             viewModel.navigateUp();
@@ -138,7 +127,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
             viewModel.updateUserProgress();
 
-            updateLocationMarker(userLocation);
+            map.markUserOnMap(userLocation);
         });
 
         viewModel.reachedDestination.observe(getViewLifecycleOwner(), event -> {
@@ -162,47 +151,11 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
     }
 
     private void updatePathOnMap(List<StepModel> remainingSteps) {
-        if (remainingPathPolyline != null) {
-            binding.map.removePolyline(remainingPathPolyline);
-        }
-
-        var pointsOfRemainingPath = remainingSteps.stream()
-                .map(step -> PolylineEncoding.decode(step.getEncodedPolyline()))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        remainingPathPolyline = new Polyline(new ArrayList<>(pointsOfRemainingPath), LineUtils.buildLineStyle(getContext()));
-
-        binding.map.addPolyline(remainingPathPolyline);
+        map.showRemainingPathOnMap(remainingSteps);
 
         var userLocation = viewModel.userLocation.getValue();
         if (userLocation != null) {
-            focusOnLocation(userLocation);
-        }
-    }
-
-    private void updateLocationMarker(LocationModel location) {
-        if (userLocationMarker != null) {
-            binding.map.removeMarker(userLocationMarker);
-        }
-
-        var markerStyle = MarkerUtils.buildMarkerStyle(getContext(), R.drawable.ic_marker);
-        userLocationMarker = new Marker(location.toLatLng(), markerStyle);
-
-        binding.map.addMarker(userLocationMarker);
-    }
-
-    private void setupMapSetting(int mapStyle) {
-        binding.map.setMapStyle(mapStyle);
-        binding.map.setTrafficEnabled(true);
-        binding.map.setPoiEnabled(true);
-        binding.map.setTilt(40f, 0f);
-    }
-
-    private void focusOnLocation(LocationModel location) {
-        binding.map.moveCamera(location.toLatLng(), 0.5f);
-        if (binding.map.getZoom() != 18f) {
-            binding.map.setZoom(18f, 0.5f);
+            map.focusOnLocation(userLocation);
         }
     }
 
