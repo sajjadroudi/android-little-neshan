@@ -46,24 +46,6 @@ import ir.roudi.littleneshan.utils.MarkerUtils;
 
 public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewModel> {
 
-    private final OnTurnOnLocationResultListener locationSettingsResultListener = new OnTurnOnLocationResultListener() {
-
-        @Override
-        public void onRequireResolution(ResolvableApiException exception) throws IntentSender.SendIntentException {
-            exception.startResolutionForResult(getActivity(), MainActivity.LOCATION_SETTING_REQUEST_CODE);
-        }
-
-        @Override
-        public void onSettingsChangeUnavailable() {
-            viewModel.showError(R.string.inadequate_location_settings);
-        }
-
-        @Override
-        public void onSendIntentException(IntentSender.SendIntentException exception) {
-            viewModel.showError(R.string.something_went_wrong);
-        }
-    };
-
     private Marker userMarker;
     private Marker destinationMarker;
     private Polyline routingPathPolyLine;
@@ -82,7 +64,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     public void onStart() {
         super.onStart();
 
-        viewModel.startLocationUpdates(locationSettingsResultListener);
+        startLocationUpdates(false, false);
 
         // TODO: Maybe it's better to observe only the first item.
         viewModel.userLocation.observe(getViewLifecycleOwner(), location -> {
@@ -90,7 +72,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
         });
 
         binding.btnLocation.setOnClickListener(v -> {
-            viewModel.startLocationUpdates(locationSettingsResultListener);
+            startLocationUpdates(true, true);
 
             var location = viewModel.userLocation.getValue();
             if (location != null) {
@@ -135,6 +117,35 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                 findNavController(MainFragment.this)
                         .navigate(R.id.destination_detail, bundle);
             });
+        });
+    }
+
+    private void startLocationUpdates(boolean showTurnOnLocationDialog, boolean showError) {
+        viewModel.startLocationUpdates(new OnTurnOnLocationResultListener() {
+
+            @Override
+            public void onRequireResolution(ResolvableApiException exception) throws IntentSender.SendIntentException {
+                if(showTurnOnLocationDialog) {
+                    exception.startResolutionForResult(
+                            getActivity(),
+                            MainActivity.LOCATION_SETTING_REQUEST_CODE
+                    );
+                }
+            }
+
+            @Override
+            public void onSettingsChangeUnavailable() {
+                if(showError) {
+                    viewModel.showError(R.string.inadequate_location_settings);
+                }
+            }
+
+            @Override
+            public void onSendIntentException(IntentSender.SendIntentException exception) {
+                if(showError) {
+                    viewModel.showError(R.string.something_went_wrong);
+                }
+            }
         });
     }
 
@@ -274,7 +285,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
-                        viewModel.startLocationUpdates(locationSettingsResultListener);
+                        startLocationUpdates(true, true);
                     }
 
                     @Override
