@@ -50,7 +50,8 @@
                 android:focusable="true"
                 android:padding="10dp"
                 android:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_location" />
+                app:srcCompat="@drawable/ic_location"
+                android:onClick="@{() -> viewmodel.focusOnUserLocation()}"/>
 
         </LinearLayout>
 

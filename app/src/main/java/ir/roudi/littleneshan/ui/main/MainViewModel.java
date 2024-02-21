@@ -23,18 +23,15 @@ public class MainViewModel extends BaseViewModel {
 
     private final NavigationRepository navigationRepository;
 
-    public final LiveData<UserLocationUiModel> userLocation;
+    private final LiveData<UserLocationUiModel> userLocation;
 
-    private final MutableLiveData<Event<String>> _navigationPath = new MutableLiveData<>();
-    public final LiveData<Event<String>> navigationPath = _navigationPath;
+    private final MutableLiveData<Event<String>> navigationPath = new MutableLiveData<>();
 
-    private final MutableLiveData<Event<AddressUiModel>> _address = new MutableLiveData<>();
-    public final LiveData<Event<AddressUiModel>> address = _address;
+    private final MutableLiveData<Event<AddressUiModel>> destinationAddress = new MutableLiveData<>();
 
-    private final MutableLiveData<Event<Object>> _navigateToNavigationScreen = new MutableLiveData<>();
-    public final LiveData<Event<Object>> navigateToNavigationScreen = _navigateToNavigationScreen;
+    private final MutableLiveData<Event<Boolean>> navigateToNavigationScreen = new MutableLiveData<>();
 
-    private final MutableLiveData<Event<Boolean>> _switchTheme = new MutableLiveData<>(new Event<>(false));
+    private final MutableLiveData<Event<Boolean>> switchTheme = new MutableLiveData<>(new Event<>(false));
 
     private final MutableLiveData<Event<Boolean>> focusOnUserLocation = new MutableLiveData<>(new Event<>(false));
 
@@ -92,7 +89,7 @@ public class MainViewModel extends BaseViewModel {
                 .getDirection(startLocation, endLocation, 0)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(direction -> {
-                    _navigationPath.postValue(new Event<>(direction.getOverviewPolyline()));
+                    navigationPath.postValue(new Event<>(direction.getOverviewPolyline()));
 
                     // TODO: Handle worse case scenarios when data gotten from server is null or invalid.
                     addressDisposable = navigationRepository
@@ -106,21 +103,21 @@ public class MainViewModel extends BaseViewModel {
                                         direction.getDistance().getText(),
                                         address.getAddress()
                                 );
-                                _address.postValue(new Event<>(value));
+                                destinationAddress.postValue(new Event<>(value));
                             });
                 });
     }
 
     public void navigateToNavigationScreen() {
-        _navigateToNavigationScreen.postValue(new Event<>(new Object()));
+        navigateToNavigationScreen.postValue(new Event<>(true));
     }
 
     public LiveData<Event<Boolean>> getSwitchThemeEvent() {
-        return _switchTheme;
+        return switchTheme;
     }
 
     public void switchTheme() {
-        _switchTheme.postValue(new Event<>(true));
+        switchTheme.postValue(new Event<>(true));
     }
 
     public LiveData<Event<Boolean>> getFocusOnUserLocationEvent() {
@@ -129,6 +126,22 @@ public class MainViewModel extends BaseViewModel {
 
     public void focusOnUserLocation() {
         focusOnUserLocation.postValue(new Event<>(true));
+    }
+
+    public LiveData<Event<AddressUiModel>> getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public LiveData<Event<String>> getNavigationPath() {
+        return navigationPath;
+    }
+
+    public LiveData<Event<Boolean>> getNavigateToNavigationScreen() {
+        return navigateToNavigationScreen;
+    }
+
+    public LiveData<UserLocationUiModel> getUserLocation() {
+        return userLocation;
     }
 
     @Override

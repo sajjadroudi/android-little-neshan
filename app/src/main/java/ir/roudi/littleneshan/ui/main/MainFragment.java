@@ -110,7 +110,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
     private void registerUserLocationObserver() {
         // TODO: Maybe it's better to observe only the first item.
-        viewModel.userLocation.observe(getViewLifecycleOwner(), location -> {
+        viewModel.getUserLocation().observe(getViewLifecycleOwner(), location -> {
             showLocation(location.getLocation(), location.isCached());
         });
     }
@@ -138,7 +138,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
             event.doIfNotHandled(focusOnUserLocation -> {
                 requestLocationPermission(true, true, true);
 
-                var location = viewModel.userLocation.getValue();
+                var location = viewModel.getUserLocation().getValue();
                 if (location != null) {
                     showLocation(location.getLocation(), location.isCached());
                 }
@@ -147,13 +147,13 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     }
 
     private void registerNavigationPathObserver() {
-        viewModel.navigationPath.observe(getViewLifecycleOwner(), pathEvent -> {
+        viewModel.getNavigationPath().observe(getViewLifecycleOwner(), pathEvent -> {
             pathEvent.doIfNotHandled(this::showPathOnMap);
         });
     }
 
     private void registerNavigateToDestinationDetailsBottomSheet() {
-        viewModel.address.observe(getViewLifecycleOwner(), addressEvent -> {
+        viewModel.getDestinationAddress().observe(getViewLifecycleOwner(), addressEvent -> {
             addressEvent.doIfNotHandled(address -> {
                 var bundle = new DestinationDetailsBottomSheetArgs.Builder(
                         address.getTitle(),
@@ -186,8 +186,11 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     }
 
     private void registerNavigateToNavigationScreen() {
-        viewModel.navigateToNavigationScreen.observe(getViewLifecycleOwner(), event -> {
-            event.doIfNotHandled(content -> {
+        viewModel.getNavigateToNavigationScreen().observe(getViewLifecycleOwner(), event -> {
+            event.doIfNotHandled(navigate -> {
+                if(!navigate)
+                    return;
+
                 var navController = findNavController(MainFragment.this);
 
                 navController.getCurrentBackStackEntry()
@@ -268,7 +271,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
         binding.map.addMarker(destinationMarker);
 
-        viewModel.startLocation = viewModel.userLocation.getValue().getLocation();
+        viewModel.startLocation = viewModel.getUserLocation().getValue().getLocation();
         viewModel.endLocation = location;
         viewModel.navigate();
     }
