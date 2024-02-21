@@ -28,3 +28,4 @@
 - Load last location when GPS is turned off.
   - Need to cache last location in shared preferences.
 - Handle landscape.
+- Add direction of the car when navigating.

@@ -38,10 +38,9 @@ public class MainViewModel extends BaseViewModel {
     private Disposable navigationPathDisposable;
     private Disposable addressDisposable;
 
-    // TODO: Define getter and setter for startLocation and endLocation
-    public LocationModel startLocation;
+    private LocationModel startLocation;
 
-    public LocationModel endLocation;
+    private LocationModel endLocation;
 
     @Inject
     public MainViewModel(LocationRepository locationRepository, NavigationRepository navigationRepository) {
@@ -78,11 +77,16 @@ public class MainViewModel extends BaseViewModel {
         locationRepository.unsubscribeFromReceivingLocationUpdates();
     }
 
-    public void navigate() {
-        if (startLocation == null || endLocation == null) {
+    public void navigate(LocationModel destination) {
+        var source = userLocation.getValue();
+
+        if (source == null || source.getLocation() == null || destination == null) {
             // TODO: Handle error
             return;
         }
+
+        startLocation = source.getLocation();
+        endLocation = destination;
 
         // TODO: Handle timeout situation
         navigationPathDisposable = navigationRepository
@@ -142,6 +146,19 @@ public class MainViewModel extends BaseViewModel {
 
     public LiveData<UserLocationUiModel> getUserLocation() {
         return userLocation;
+    }
+
+    public LocationModel getStartLocation() {
+        return startLocation;
+    }
+
+    public LocationModel getEndLocation() {
+        return endLocation;
+    }
+
+    public void clearNavigationData() {
+        startLocation = null;
+        endLocation = null;
     }
 
     @Override

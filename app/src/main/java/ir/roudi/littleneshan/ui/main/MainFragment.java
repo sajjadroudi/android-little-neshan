@@ -132,7 +132,11 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     private void registerNavigationPathObserver() {
         viewModel.getNavigationPath().observe(getViewLifecycleOwner(), pathEvent -> {
             pathEvent.doIfNotHandled(navigationPath -> {
-                map.showPathOnMap(navigationPath, viewModel.startLocation, viewModel.endLocation);
+                var start = viewModel.getStartLocation();
+                var end = viewModel.getEndLocation();
+                if(start != null && end != null) {
+                    map.showPathOnMap(navigationPath, start, end);
+                }
             });
         });
     }
@@ -184,13 +188,14 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
                 var args = new NavigationFragmentArgs.Builder(
                         map.getMapStyle(),
-                        viewModel.startLocation,
-                        viewModel.endLocation
+                        viewModel.getStartLocation(),
+                        viewModel.getEndLocation()
                 )
                         .build()
                         .toBundle();
 
-                clearMap();
+                viewModel.clearNavigationData();
+                map.clear();
 
                 navController.navigate(R.id.navigation_destination, args);
             });
@@ -198,12 +203,9 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     }
 
     private void registerOnMapClickListener() {
-        map.setOnMapLongClickListener(location -> {
-            map.markDestinationOnMap(location);
-
-            viewModel.startLocation = viewModel.getUserLocation().getValue().getLocation();
-            viewModel.endLocation = location;
-            viewModel.navigate();
+        map.setOnMapLongClickListener(destination -> {
+            map.markDestinationOnMap(destination);
+            viewModel.navigate(destination);
         });
     }
 
@@ -223,12 +225,6 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
         super.onViewCreated(view, savedInstanceState);
         map = new LittleNeshanMap(binding.map);
         binding.setViewmodel(viewModel);
-    }
-
-    private void clearMap() {
-        viewModel.endLocation = null;
-        map.clear();
-        map.focusOnLocation(viewModel.startLocation);
     }
 
     private void requestLocationPermission(
