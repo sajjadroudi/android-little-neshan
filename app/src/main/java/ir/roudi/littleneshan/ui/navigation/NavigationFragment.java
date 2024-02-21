@@ -107,6 +107,24 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
         setupNavigationMap();
 
+        registerObservers();
+
+    }
+
+    private void setupNavigationMap() {
+        var args = NavigationFragmentArgs.fromBundle(getArguments());
+        map = new NavigationMap(binding.map, args.getMapStyle());
+    }
+
+    private void registerObservers() {
+        registerDirectionObserver();
+        registerUserLocationObserver();
+        registerReachedDestinationObserver();
+        registerFocusOnUserLocationObserver();
+        registerRemainingStepsObserver();
+    }
+
+    private void registerDirectionObserver() {
         viewModel.getDirection().observe(getViewLifecycleOwner(), direction -> {
             if (direction == null)
                 return;
@@ -122,7 +140,9 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
             var text = "بعدی: " + nextStep.getName() + "\n" + nextStep.getDistance().getText() + " دیگر " + nextStep.getInstruction();
             binding.address.setText(text);
         });
+    }
 
+    private void registerUserLocationObserver() {
         viewModel.getUserLocation().observe(getViewLifecycleOwner(), userLocation -> {
             if (userLocation == null)
                 return;
@@ -131,7 +151,9 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
             map.markUserOnMap(userLocation);
         });
+    }
 
+    private void registerReachedDestinationObserver() {
         viewModel.getReachedDestination().observe(getViewLifecycleOwner(), event -> {
             event.doIfNotHandled(reachedDestination -> {
                 if (reachedDestination) {
@@ -142,15 +164,9 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
                 }
             });
         });
+    }
 
-        viewModel.getRemainingSteps().observe(getViewLifecycleOwner(), steps -> {
-            if (steps == null)
-                return;
-
-            map.showRemainingPathOnMap(steps);
-            viewModel.focusOnUserLocation();
-        });
-
+    private void registerFocusOnUserLocationObserver() {
         viewModel.getFocusOnUserLocationEvent().observe(getViewLifecycleOwner(), event -> {
             event.doIfNotHandled(userLocation -> {
                 map.focusOnLocation(userLocation);
@@ -158,9 +174,14 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
         });
     }
 
-    private void setupNavigationMap() {
-        var args = NavigationFragmentArgs.fromBundle(getArguments());
-        map = new NavigationMap(binding.map, args.getMapStyle());
+    private void registerRemainingStepsObserver() {
+        viewModel.getRemainingSteps().observe(getViewLifecycleOwner(), steps -> {
+            if (steps == null)
+                return;
+
+            map.showRemainingPathOnMap(steps);
+            viewModel.focusOnUserLocation();
+        });
     }
 
     @Override
