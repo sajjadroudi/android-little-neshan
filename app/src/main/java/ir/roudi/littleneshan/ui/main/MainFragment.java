@@ -13,8 +13,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.carto.core.ScreenBounds;
-import com.carto.core.ScreenPos;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
@@ -22,14 +20,6 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
-
-import org.neshan.common.model.LatLngBounds;
-import org.neshan.common.utils.PolylineEncoding;
-import org.neshan.mapsdk.model.Marker;
-import org.neshan.mapsdk.model.Polyline;
-import org.neshan.mapsdk.style.NeshanMapStyle;
-
-import java.util.ArrayList;
 
 import ir.roudi.littleneshan.BuildConfig;
 import ir.roudi.littleneshan.R;
@@ -39,14 +29,10 @@ import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultList
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
-import ir.roudi.littleneshan.utils.LineUtils;
-import ir.roudi.littleneshan.utils.MarkerUtils;
 
 public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewModel> {
 
-    private Marker userMarker;
-    private Marker destinationMarker;
-    private Polyline routingPathPolyLine;
+    private LittleNeshanMap map;
 
     @Override
     public Class<MainViewModel> getViewModelClass() {
@@ -119,12 +105,9 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
         viewModel.getSwitchThemeEvent().observe(getViewLifecycleOwner(), event -> {
             event.doIfNotHandled(switchTheme -> {
                 if(switchTheme) {
-                    boolean isNightMode = (binding.map.getMapStyle() == NeshanMapStyle.NESHAN);
+                    map.switchTheme();
 
-                    var newTheme = isNightMode ? NeshanMapStyle.NESHAN_NIGHT : NeshanMapStyle.NESHAN;
-                    binding.map.setMapStyle(newTheme);
-
-                    var icon = isNightMode ? R.drawable.ic_light : R.drawable.ic_night;
+                    var icon = map.isNightTheme() ? R.drawable.ic_light : R.drawable.ic_night;
                     binding.btnTheme.setImageResource(icon);
 
                     // TODO: Change color of buttons
@@ -148,7 +131,9 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
     private void registerNavigationPathObserver() {
         viewModel.getNavigationPath().observe(getViewLifecycleOwner(), pathEvent -> {
-            pathEvent.doIfNotHandled(this::showPathOnMap);
+            pathEvent.doIfNotHandled(navigationPath -> {
+                map.showPathOnMap(navigationPath, viewModel.startLocation, viewModel.endLocation);
+            });
         });
     }
 
@@ -198,14 +183,14 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                         .remove(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION);
 
                 var args = new NavigationFragmentArgs.Builder(
-                        binding.map.getMapStyle(),
+                        map.getMapStyle(),
                         viewModel.startLocation,
                         viewModel.endLocation
                 )
                         .build()
                         .toBundle();
 
-                removeMapObjects();
+                clearMap();
 
                 navController.navigate(R.id.navigation_destination, args);
             });
@@ -213,67 +198,18 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     }
 
     private void registerOnMapClickListener() {
-        binding.map.setOnMapLongClickListener(latLng -> {
-            markDestinationOnMap(LocationModel.from(latLng));
+        map.setOnMapLongClickListener(location -> {
+            map.markDestinationOnMap(location);
+
+            viewModel.startLocation = viewModel.getUserLocation().getValue().getLocation();
+            viewModel.endLocation = location;
+            viewModel.navigate();
         });
     }
 
-    // TODO: Put delay to improve UX
-    private void showPathOnMap(String pathString) {
-        if (routingPathPolyLine != null) {
-            binding.map.removePolyline(routingPathPolyLine);
-        }
-
-        var path = PolylineEncoding.decode(pathString);
-
-        routingPathPolyLine = new Polyline(new ArrayList<>(path), LineUtils.buildLineStyle(getContext()));
-        binding.map.addPolyline(routingPathPolyLine);
-
-        // setup map camera to show whole path
-        var latLngBounds = new LatLngBounds(
-                viewModel.startLocation.toLatLng(),
-                viewModel.endLocation.toLatLng()
-        );
-        float mapWidth = Math.min(binding.map.getWidth(), binding.map.getHeight());
-        var screenBounds = new ScreenBounds(
-                new ScreenPos(0F, 0F),
-                new ScreenPos(mapWidth, mapWidth)
-        );
-        binding.map.moveToCameraBounds(latLngBounds, screenBounds, true, 0.5f);
-    }
-
     private void showLocation(LocationModel location, boolean isCachedLocation) {
-        focusOnLocation(location);
-        markUserOnMap(location, isCachedLocation);
-    }
-
-    private void focusOnLocation(LocationModel location) {
-        binding.map.moveCamera(location.toLatLng(), 0.25f);
-        binding.map.setZoom(15, 0.25f);
-    }
-
-    private void markUserOnMap(LocationModel location, boolean isCachedLocation) {
-        if (userMarker != null) {
-            binding.map.removeMarker(userMarker);
-        }
-        int icon = isCachedLocation ? R.drawable.ic_marker_off : R.drawable.ic_marker;
-        userMarker = new Marker(location.toLatLng(), MarkerUtils.buildMarkerStyle(getContext(), icon));
-        binding.map.addMarker(userMarker);
-    }
-
-    private void markDestinationOnMap(LocationModel location) {
-        if (destinationMarker != null) {
-            binding.map.removeMarker(destinationMarker);
-        }
-
-        var style = MarkerUtils.buildMarkerStyle(getContext(), R.drawable.ic_destination);
-        destinationMarker = new Marker(location.toLatLng(), style);
-
-        binding.map.addMarker(destinationMarker);
-
-        viewModel.startLocation = viewModel.getUserLocation().getValue().getLocation();
-        viewModel.endLocation = location;
-        viewModel.navigate();
+        map.focusOnLocation(location);
+        map.markUserOnMap(location, isCachedLocation);
     }
 
     @Override
@@ -285,32 +221,14 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        map = new LittleNeshanMap(binding.map);
         binding.setViewmodel(viewModel);
     }
 
-    private void removeMapObjects() {
+    private void clearMap() {
         viewModel.endLocation = null;
-
-        if (routingPathPolyLine != null) {
-            binding.map.removePolyline(routingPathPolyLine);
-        }
-
-        if(userMarker != null) {
-            binding.map.removeMarker(userMarker);
-        }
-
-        if(destinationMarker != null) {
-            binding.map.removeMarker(destinationMarker);
-        }
-
-        focusOnLocation(viewModel.startLocation);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        requestLocationPermission(false, false, false);
+        map.clear();
+        map.focusOnLocation(viewModel.startLocation);
     }
 
     private void requestLocationPermission(
