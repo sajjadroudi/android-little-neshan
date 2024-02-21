@@ -41,10 +41,9 @@ public class LittleNeshanMap {
     }
 
     public void showPathOnMap(String pathPolyline, LocationModel start, LocationModel end) {
-        // TODO: Put delay to improve UX
         removePathIfExists();
         addPathToMap(pathPolyline);
-        setupCameraToShowWholePath(start, end);
+        changeCameraToShowWholePath(start, end);
     }
 
     private void removePathIfExists() {
@@ -60,7 +59,7 @@ public class LittleNeshanMap {
         map.addPolyline(routingPathPolyLine);
     }
 
-    private void setupCameraToShowWholePath(LocationModel start, LocationModel end) {
+    private void changeCameraToShowWholePath(LocationModel start, LocationModel end) {
         var latLngBounds = new LatLngBounds(start.toLatLng(), end.toLatLng());
         float mapWidth = Math.min(map.getWidth(), map.getHeight());
         var screenBounds = new ScreenBounds(
