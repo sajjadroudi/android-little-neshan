@@ -112,7 +112,6 @@ public class LittleNeshanMap {
     public void clear() {
         removeDestinationMarkerIfExists();
         removePathIfExists();
-        removeUserMarkerIfExists();
     }
 
     public void switchTheme() {
