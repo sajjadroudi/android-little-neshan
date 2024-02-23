@@ -45,7 +45,6 @@
             android:layout_height="40dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/bg_radius_primary_25"
-            android:foreground="@drawable/ripple_white_radius_15"
             android:gravity="center"
             android:paddingHorizontal="30dp"
             android:text="بزن بریم"
