@@ -4,7 +4,6 @@
 - Instead of showing 'turn on GPS', it navigate the user to app settings.
 
 ## Improvement
-- Add data binding.
 - Clean up classes and refactor codes.
 - Clean up drawables and resources.
 - Define string resources.

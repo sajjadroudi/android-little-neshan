@@ -2,7 +2,6 @@ package ir.roudi.littleneshan.ui.main;
 
 import static androidx.navigation.fragment.FragmentKt.findNavController;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.navigation.NavController;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -39,34 +37,35 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         avoidDefaultDimBackground();
 
-        var args = DestinationDetailsBottomSheetArgs.fromBundle(getArguments());
-        binding.title.setText(args.getTitle());
-        binding.duration.setText(args.getDuration());
-        binding.distance.setText(args.getDistance());
-        binding.address.setText(args.getAddress());
+        bindUi();
 
-        binding.route.setOnClickListener(v -> {
-            setStartNavigation(true);
-            close();
-        });
+        registerOnRouteClickListener();
 
-        if(getDialog() != null) {
-            getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    setStartNavigation(false);
-                    close();
-                }
-            });
-        }
+        registerOnDismissListener();
     }
 
     private void avoidDefaultDimBackground() {
         if(getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         }
+    }
+
+    private void bindUi() {
+        var args = DestinationDetailsBottomSheetArgs.fromBundle(getArguments());
+        binding.title.setText(args.getTitle());
+        binding.duration.setText(args.getDuration());
+        binding.distance.setText(args.getDistance());
+        binding.address.setText(args.getAddress());
+    }
+
+    private void registerOnRouteClickListener() {
+        binding.route.setOnClickListener(v -> {
+            setStartNavigation(true);
+            close();
+        });
     }
 
     private void setStartNavigation(boolean value) {
@@ -82,6 +81,15 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
         dismiss();
         var navController = findNavController(DestinationDetailsBottomSheet.this);
         navController.popBackStack();
+    }
+
+    private void registerOnDismissListener() {
+        if(getDialog() != null) {
+            getDialog().setOnDismissListener(dialog -> {
+                setStartNavigation(false);
+                close();
+            });
+        }
     }
 
 }
