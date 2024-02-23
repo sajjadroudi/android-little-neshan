@@ -3,10 +3,7 @@
 - Handle being turn off of location.
 - Update distance and duration automatically in the navigation screen.
 - Remove path in the main screen when bottom sheet dismisses.
-- Prevent changing color of background of main screen when destination details bottom sheet opens.
-
-## Feature
-- Add search bar.
+- When app gets open, we should focus on user location.
 
 ## Improvement
 - Add data binding.

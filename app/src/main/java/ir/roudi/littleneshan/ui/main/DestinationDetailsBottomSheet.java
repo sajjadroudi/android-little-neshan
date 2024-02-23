@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +39,8 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        avoidDefaultDimBackground();
+
         var args = DestinationDetailsBottomSheetArgs.fromBundle(getArguments());
         binding.title.setText(args.getTitle());
         binding.duration.setText(args.getDuration());
@@ -57,6 +60,12 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
                     close();
                 }
             });
+        }
+    }
+
+    private void avoidDefaultDimBackground() {
+        if(getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         }
     }
 
