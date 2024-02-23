@@ -1,11 +1,10 @@
 ## Bug
 - Update distance and duration automatically in the navigation screen.
+- 
 
 ## Improvement
 - Clean up classes and refactor codes.
-- Clean up drawables and resources.
 - Define string resources.
-- Handle disconnection to the internet.
 - Handle unexpected situations when working with api.
 - Maybe it's better to add progress bar.
 - Use actions for navigation.

@@ -9,6 +9,8 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.core.BaseViewModel;
@@ -19,6 +21,7 @@ import ir.roudi.littleneshan.data.repository.location.LocationRepository;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.data.repository.navigation.NavigationRepository;
 import ir.roudi.littleneshan.utils.Event;
+import ir.roudi.littleneshan.utils.ExceptionUtils;
 
 @HiltViewModel
 public class NavigationViewModel extends BaseViewModel {
@@ -67,15 +70,32 @@ public class NavigationViewModel extends BaseViewModel {
         if(loadDirectionDisposable != null)
             loadDirectionDisposable.dispose();
 
-        loadDirectionDisposable = navigationRepository
+        navigationRepository
                 .getDirection(startLocation, endLocation, bearing)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(direction -> {
-                    lastReachedStepIndex = 0;
+                .subscribe(new SingleObserver<DirectionModel>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        loadDirectionDisposable = d;
+                    }
 
-                    remainingSteps.postValue(direction.getSteps());
+                    @Override
+                    public void onSuccess(@NonNull DirectionModel direction) {
+                        lastReachedStepIndex = 0;
 
-                    this.direction.postValue(direction);
+                        remainingSteps.postValue(direction.getSteps());
+
+                        NavigationViewModel.this.direction.postValue(direction);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        if(ExceptionUtils.isDisconnectedToServer(e)) {
+                            showError(R.string.connection_to_server_error);
+                        } else {
+                            showError(R.string.something_went_wrong);
+                        }
+                    }
                 });
     }
 

@@ -3,6 +3,7 @@ package ir.roudi.littleneshan.core;
 import static androidx.navigation.fragment.FragmentKt.findNavController;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public abstract class BaseFragment<DB extends ViewDataBinding, VM extends BaseVi
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState
     ) {
+        log("onCreateView");
         binding = DataBindingUtil.inflate(getLayoutInflater(), getLayoutId(), container, false);
         return binding.getRoot();
     }
@@ -39,6 +41,7 @@ public abstract class BaseFragment<DB extends ViewDataBinding, VM extends BaseVi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        log("onCreate");
         setupViewModel();
     }
 
@@ -57,6 +60,7 @@ public abstract class BaseFragment<DB extends ViewDataBinding, VM extends BaseVi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        log("onViewCreated");
 
         observerEvents();
     }
@@ -82,6 +86,40 @@ public abstract class BaseFragment<DB extends ViewDataBinding, VM extends BaseVi
                 }
             });
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        log("onResume");
+    }
+
+    @Override
+    public void onPause() {
+        log("onPause");
+        super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        log("onStart");
+    }
+
+    @Override
+    public void onStop() {
+        log("onStop");
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        log("onDestroy");
+        super.onDestroy();
+    }
+
+    private void log(String message) {
+        Log.i(getClass().getSimpleName(), message);
     }
 
 }

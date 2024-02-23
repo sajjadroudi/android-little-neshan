@@ -8,7 +8,7 @@ public class ExceptionUtils {
 
     }
 
-    public static boolean isDisconnectedToInternet(Throwable throwable) {
+    public static boolean isDisconnectedToServer(Throwable throwable) {
         return throwable instanceof UnknownHostException;
     }
 

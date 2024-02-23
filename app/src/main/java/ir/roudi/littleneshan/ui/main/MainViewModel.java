@@ -112,7 +112,7 @@ public class MainViewModel extends BaseViewModel {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        if(ExceptionUtils.isDisconnectedToInternet(e)) {
+                        if(ExceptionUtils.isDisconnectedToServer(e)) {
                             showError(R.string.connection_to_server_error);
                         } else {
                             showError(R.string.something_went_wrong);
@@ -145,7 +145,7 @@ public class MainViewModel extends BaseViewModel {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        if(ExceptionUtils.isDisconnectedToInternet(e)) {
+                        if(ExceptionUtils.isDisconnectedToServer(e)) {
                             showError(R.string.connection_to_server_error);
                         } else {
                             showError(R.string.something_went_wrong);
