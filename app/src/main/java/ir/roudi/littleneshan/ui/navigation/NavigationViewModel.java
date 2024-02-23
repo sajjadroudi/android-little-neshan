@@ -82,20 +82,17 @@ public class NavigationViewModel extends BaseViewModel {
     public void updateUserProgress() {
         var direction = this.direction.getValue();
         if(direction == null) {
-            showError(R.string.something_went_wrong);
             return;
         }
 
         List<StepModel> steps = direction.getSteps();
 
         if(steps == null || steps.size() < 2) {
-            showError(R.string.something_went_wrong);
             return;
         }
 
         var userLocation = this.userLocation.getValue();
         if(userLocation == null) {
-            showError(R.string.something_went_wrong);
             return;
         }
 

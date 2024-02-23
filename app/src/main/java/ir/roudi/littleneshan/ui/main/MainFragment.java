@@ -183,7 +183,9 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                         boolean doesStartNavigation = (Boolean) object;
                         if(doesStartNavigation) {
                             viewModel.navigateToNavigationScreen();
-                        }
+                        } else {
+                            viewModel.clearNavigationData();
+                            map.clear();                        }
                     }
                 });
     }
@@ -211,9 +213,6 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                 )
                         .build()
                         .toBundle();
-
-                viewModel.clearNavigationData();
-                map.clear();
 
                 navController.navigate(R.id.navigation_destination, args);
             });
