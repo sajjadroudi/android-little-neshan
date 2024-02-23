@@ -3,6 +3,8 @@ package ir.roudi.littleneshan.ui.main;
 import static androidx.navigation.fragment.FragmentKt.findNavController;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.net.Uri;
@@ -274,8 +276,18 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                         if(isPermissionGranted) {
                             startLocationUpdates(showTurnOnLocationDialog, showError);
                         } else if(isPermissionPermanentlyDenied) {
-                            // TODO: Show dialog
+                            showGrantLocationPermission();
                         }
+                    }
+
+                    private void showGrantLocationPermission() {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle("مجوز دسترسی به موقعیت")
+                                .setMessage("جهت عملکرد صحیح نشان کوچولو، به دسترسی موقعیت نیاز داریم.")
+                                .setPositiveButton("تنظیمات", (dialog, which) -> openSettings())
+                                .setNegativeButton("لغو", null)
+                                .create()
+                                .show();
                     }
 
                     @Override

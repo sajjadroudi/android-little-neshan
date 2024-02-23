@@ -1,7 +1,5 @@
 ## Bug
-- Handle being turn off of location.
 - Update distance and duration automatically in the navigation screen.
-- Instead of showing 'turn on GPS', it navigate the user to app settings.
 
 ## Improvement
 - Clean up classes and refactor codes.
@@ -25,3 +23,4 @@
   - Need to cache last location in shared preferences.
 - Handle landscape.
 - Add direction of the car when navigating.
+- Compatibility with Android 14.
