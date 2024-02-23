@@ -28,19 +28,6 @@
             android:layout_marginEnd="16dp">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_theme"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/btn_gray_light"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="10dp"
-                android:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_night"
-                android:onClick="@{() -> viewmodel.switchTheme()}"/>
-
-            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btn_location"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -52,6 +39,19 @@
                 android:tint="@color/colorPrimary"
                 app:srcCompat="@drawable/ic_location"
                 android:onClick="@{() -> viewmodel.focusOnUserLocation()}"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btn_theme"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/btn_gray_light"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp"
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_night"
+                android:onClick="@{() -> viewmodel.switchTheme()}"/>
 
         </LinearLayout>
 
