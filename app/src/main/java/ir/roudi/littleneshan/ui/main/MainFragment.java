@@ -30,6 +30,7 @@ import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
 import ir.roudi.littleneshan.utils.LiveDataUtils;
+import ir.roudi.littleneshan.utils.PermissionUtils;
 
 public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewModel> {
 
@@ -262,8 +263,18 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
                     @Override
                     public void onPermissionDenied(PermissionDeniedResponse response) {
-                        if(response.isPermanentlyDenied() && openSettings) {
-                            openSettings();
+                        var isPermissionPermanentlyDenied = PermissionUtils.isPermissionPermanentlyDenied(
+                                MainFragment.this, response.getPermissionName()
+                        );
+
+                        var isPermissionGranted = PermissionUtils.isPermissionGranted(
+                                getContext(), response.getPermissionName()
+                        );
+
+                        if(isPermissionGranted) {
+                            startLocationUpdates(showTurnOnLocationDialog, showError);
+                        } else if(isPermissionPermanentlyDenied) {
+                            // TODO: Show dialog
                         }
                     }
 
