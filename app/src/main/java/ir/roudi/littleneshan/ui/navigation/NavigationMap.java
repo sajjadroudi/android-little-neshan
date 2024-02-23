@@ -106,4 +106,8 @@ public class NavigationMap {
         return new Marker(location.toLatLng(), markerStyle);
     }
 
+    public void setBearing(float bearing) {
+        map.setBearing(bearing, 0.7f);
+    }
+
 }

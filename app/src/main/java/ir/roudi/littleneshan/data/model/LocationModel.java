@@ -80,6 +80,12 @@ public class LocationModel implements Serializable {
         return location;
     }
 
+    public float bearingTo(LocationModel location) {
+        float bearing = toLocation().bearingTo(location.toLocation());
+        float normalizedBearing = (bearing + 360) % 360;
+        return normalizedBearing;
+    }
+
     public static LocationModel from(Location location) {
         return new LocationModel(location.getLatitude(), location.getLongitude(), location.getBearing(), location.getAccuracy());
     }

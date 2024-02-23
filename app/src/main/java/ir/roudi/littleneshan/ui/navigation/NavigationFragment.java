@@ -133,12 +133,17 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
             binding.duration.setText(direction.getDuration().getText());
 
-            if (direction.getSteps() == null || direction.getSteps().isEmpty())
+            var steps = direction.getSteps();
+
+            if (steps == null || steps.size() < 2)
                 return;
 
-            var nextStep = direction.getSteps().get(0);
+            var nextStep = steps.get(0); // TODO: Maybe we need to get 1st item instead of 0th item
             var text = "بعدی: " + nextStep.getName() + "\n" + nextStep.getDistance().getText() + " دیگر " + nextStep.getInstruction();
             binding.address.setText(text);
+
+            var bearing = steps.get(0).getStartPoint().bearingTo(steps.get(1).getStartPoint());
+            map.setBearing(bearing);
         });
     }
 
