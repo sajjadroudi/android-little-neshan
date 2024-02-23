@@ -29,6 +29,7 @@ import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultList
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
 import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
+import ir.roudi.littleneshan.utils.LiveDataUtils;
 
 public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewModel> {
 
@@ -82,6 +83,13 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
         });
     }
 
+    private void registerOnMapClickListener() {
+        map.setOnMapLongClickListener(destination -> {
+            map.markDestinationOnMap(destination);
+            viewModel.navigate(destination);
+        });
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -102,6 +110,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
         registerNavigateToDestinationDetailsBottomSheet();
         registerWhenNavigateToNavigationScreen();
         registerNavigateToNavigationScreen();
+        registerInitialFocusOnUserLocation();
     }
 
     private void registerUserLocationObserver() {
@@ -219,11 +228,14 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
         });
     }
 
-    private void registerOnMapClickListener() {
-        map.setOnMapLongClickListener(destination -> {
-            map.markDestinationOnMap(destination);
-            viewModel.navigate(destination);
-        });
+    private void registerInitialFocusOnUserLocation() {
+        LiveDataUtils.observeOnce(
+                viewModel.getUserLocation(),
+                getViewLifecycleOwner(),
+                userLocation -> {
+                    viewModel.focusOnUserLocation();
+                }
+        );
     }
 
     private void showLocation(LocationModel location, boolean isCachedLocation) {

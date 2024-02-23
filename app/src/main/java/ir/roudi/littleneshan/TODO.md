@@ -2,7 +2,6 @@
 - When I select a destination and it shows me a path and I open the app again, It shows me my location not the whole path. Maybe it's because of observing user location.
 - Handle being turn off of location.
 - Update distance and duration automatically in the navigation screen.
-- When app gets open, we should focus on user location.
 
 ## Improvement
 - Add data binding.
