@@ -10,17 +10,30 @@ import java.io.Serializable;
 
 public class LocationModel implements Serializable {
 
+    private static final float DEFAULT_ACCURACY = 100f;
+    private static final float DEFAULT_BEARING = 0f;
+
     private final double latitude;
 
     private final double longitude;
 
-    public LocationModel(double latitude, double longitude) {
+    private final float bearing;
+
+    private final float accuracy;
+
+    public LocationModel(double latitude, double longitude, float bearing, float accuracy) {
         this.latitude = latitude;
         this.longitude = longitude;
+        this.bearing = bearing;
+        this.accuracy = accuracy;
+    }
+
+    public LocationModel(double latitude, double longitude) {
+        this(latitude, longitude, DEFAULT_BEARING, DEFAULT_ACCURACY);
     }
 
     public LocationModel(double[] location) {
-        this(location[0], location[1]);
+        this(location[0], location[1], DEFAULT_BEARING, DEFAULT_ACCURACY);
     }
 
     public double getLatitude() {
@@ -31,12 +44,22 @@ public class LocationModel implements Serializable {
         return longitude;
     }
 
+    public float getBearing() {
+        return bearing;
+    }
+
+    public float getAccuracy() {
+        return accuracy;
+    }
+
     @NonNull
     @Override
     public String toString() {
         return "LocationModel{" +
                 "latitude=" + latitude +
                 ", longitude=" + longitude +
+                ", bearing=" + bearing +
+                ", accuracy=" + accuracy +
                 '}';
     }
 
@@ -48,15 +71,17 @@ public class LocationModel implements Serializable {
         return toLocation().distanceTo(destination.toLocation());
     }
 
-    private Location toLocation() {
+    public Location toLocation() {
         Location location = new Location("");
         location.setLatitude(latitude);
         location.setLongitude(longitude);
+        location.setBearing(bearing);
+        location.setAccuracy(accuracy);
         return location;
     }
 
     public static LocationModel from(Location location) {
-        return new LocationModel(location.getLatitude(), location.getLongitude());
+        return new LocationModel(location.getLatitude(), location.getLongitude(), location.getBearing(), location.getAccuracy());
     }
 
     public static LocationModel from(LatLng location) {

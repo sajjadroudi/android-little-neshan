@@ -3,9 +3,9 @@
 - 
 
 ## Improvement
+- Improve location precision in navigation screen.
 - Clean up classes and refactor codes.
 - Define string resources.
-- Handle unexpected situations when working with api.
 - Maybe it's better to add progress bar.
 - Use actions for navigation.
 - Use parcelable instead of serializable.
@@ -23,3 +23,4 @@
 - Handle landscape.
 - Add direction of the car when navigating.
 - Compatibility with Android 14.
+- Define UI model.

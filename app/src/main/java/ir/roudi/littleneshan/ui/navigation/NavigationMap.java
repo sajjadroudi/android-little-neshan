@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
+import ir.roudi.littleneshan.ui.Config;
 import ir.roudi.littleneshan.utils.LineUtils;
 import ir.roudi.littleneshan.utils.MarkerUtils;
 
@@ -38,6 +39,7 @@ public class NavigationMap {
         map.setTrafficEnabled(true);
         map.setPoiEnabled(true);
         map.setTilt(40f, 0f);
+        map.setMyLocationEnabled(Config.SHOW_USER_LOCATION_BY_NESHAN);
     }
 
     public void showRemainingPathOnMap(List<StepModel> remainingSteps) {
@@ -79,8 +81,13 @@ public class NavigationMap {
     }
 
     public void markUserOnMap(LocationModel location) {
-        removeUserMarkerIfExists();
-        addUserMarkerToMap(location);
+        if(Config.SHOW_USER_LOCATION_BY_NESHAN) {
+            map.pauseLocationViewer();
+            map.onLocationChanged(location.toLocation());
+        } else {
+            removeUserMarkerIfExists();
+            addUserMarkerToMap(location);
+        }
     }
 
     private void removeUserMarkerIfExists() {
