@@ -19,6 +19,7 @@ import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
 import ir.roudi.littleneshan.data.repository.location.LocationRepository;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
+import ir.roudi.littleneshan.data.repository.location.PrecisionLocationRequest;
 import ir.roudi.littleneshan.data.repository.navigation.NavigationRepository;
 import ir.roudi.littleneshan.utils.Event;
 import ir.roudi.littleneshan.utils.ExceptionUtils;
@@ -55,7 +56,7 @@ public class NavigationViewModel extends BaseViewModel {
     }
 
     public void startLocationUpdates(OnTurnOnLocationResultListener callback) {
-        locationRepository.subscribeToReceiveLocationUpdates(callback);
+        locationRepository.subscribeToReceiveLocationUpdates(PrecisionLocationRequest.PRECISE, callback);
     }
 
     public void startNavigation(LocationModel startLocation, LocationModel endLocation) {
@@ -163,5 +164,13 @@ public class NavigationViewModel extends BaseViewModel {
 
     public LiveData<LocationModel> getUserLocation() {
         return userLocation;
+    }
+
+    @Override
+    protected void onCleared() {
+
+        locationRepository.unsubscribeFromReceivingLocationUpdates();
+
+        super.onCleared();
     }
 }

@@ -73,20 +73,19 @@ public class LocationRepositoryDefault implements LocationRepository {
     public void subscribeToReceiveLocationUpdates(
             OnTurnOnLocationResultListener resultListener
     ) {
-        subscribeToReceiveLocationUpdates(buildDefaultLocationRequest(), resultListener);
+        subscribeToReceiveLocationUpdates(PrecisionLocationRequest.APPROXIMATE, resultListener);
     }
 
-    // TODO: Create local model for LocationRequest
     @Override
     @SuppressLint("MissingPermission")
     public void subscribeToReceiveLocationUpdates(
-            LocationRequest locationRequest,
+            PrecisionLocationRequest request,
             OnTurnOnLocationResultListener resultListener
     ) {
-        // TODO: Maybe need to unsubscribe first
+        unsubscribeFromReceivingLocationUpdates();
 
         // TODO: Maybe need to cache same object of location settings response task
-        buildDefaultLocationSettingsResponseTask(locationRequest)
+        buildDefaultLocationSettingsResponseTask(request.toLocationRequest())
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -111,7 +110,7 @@ public class LocationRepositoryDefault implements LocationRepository {
                 });
 
         locationClient.requestLocationUpdates(
-                locationRequest,
+                request.toLocationRequest(),
                 currentLocationListener,
                 Looper.getMainLooper()
         );
@@ -126,15 +125,6 @@ public class LocationRepositoryDefault implements LocationRepository {
     @Override
     public void unsubscribeFromReceivingLocationUpdates() {
         locationClient.removeLocationUpdates(currentLocationListener);
-    }
-
-    private LocationRequest buildDefaultLocationRequest() {
-        var request = new LocationRequest();
-        request.setInterval(TimeUnit.SECONDS.toMillis(30));
-        request.setFastestInterval(TimeUnit.SECONDS.toMillis(60));
-        request.setMaxWaitTime(TimeUnit.MINUTES.toMillis(2));
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return request;
     }
 
     private Task<LocationSettingsResponse> buildDefaultLocationSettingsResponseTask(

@@ -20,7 +20,7 @@ public interface LocationRepository {
 
     @SuppressLint("MissingPermission")
     void subscribeToReceiveLocationUpdates(
-            LocationRequest locationRequest,
+            PrecisionLocationRequest request,
             OnTurnOnLocationResultListener resultListener
     );
 

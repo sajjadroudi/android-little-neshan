@@ -205,11 +205,13 @@ public class MainViewModel extends BaseViewModel {
 
     @Override
     protected void onCleared() {
-        if(navigationPathDisposable != null)
+        if(navigationPathDisposable != null && !navigationPathDisposable.isDisposed())
             navigationPathDisposable.dispose();
 
-        if(addressDisposable != null)
+        if(addressDisposable != null && !addressDisposable.isDisposed())
             addressDisposable.dispose();
+
+        locationRepository.unsubscribeFromReceivingLocationUpdates();
 
         super.onCleared();
     }

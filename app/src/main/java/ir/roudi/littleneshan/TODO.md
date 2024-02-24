@@ -3,7 +3,6 @@
 - 
 
 ## Improvement
-- Improve location precision in navigation screen.
 - Clean up classes and refactor codes.
 - Define string resources.
 - Maybe it's better to add progress bar.
@@ -24,3 +23,6 @@
 - Add direction of the car when navigating.
 - Compatibility with Android 14.
 - Define UI model.
+
+## DONE
+- Improve location precision in navigation screen.
