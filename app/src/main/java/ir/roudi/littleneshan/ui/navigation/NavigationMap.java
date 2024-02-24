@@ -28,6 +28,8 @@ public class NavigationMap {
 
     private Polyline remainingPathPolyline;
 
+    private Marker destinationMarker;
+
     public NavigationMap(MapView map, int mapStyle) {
         this.map = map;
 
@@ -108,6 +110,23 @@ public class NavigationMap {
 
     public void setBearing(float bearing) {
         map.setBearing(bearing, 0.7f);
+    }
+
+    public void markDestinationOnMap(LocationModel location) {
+        removeDestinationMarkerIfExists();
+        addDestinationMarkerToMap(location);
+    }
+
+    private void removeDestinationMarkerIfExists() {
+        if (destinationMarker != null) {
+            map.removeMarker(destinationMarker);
+        }
+    }
+
+    private void addDestinationMarkerToMap(LocationModel location) {
+        var style = MarkerUtils.buildMarkerStyle(map.getContext(), R.drawable.ic_destination);
+        destinationMarker = new Marker(location.toLatLng(), style);
+        map.addMarker(destinationMarker);
     }
 
 }
