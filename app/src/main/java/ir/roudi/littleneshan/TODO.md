@@ -1,6 +1,5 @@
 ## Bug
 - Update distance and duration automatically in the navigation screen.
-- Initial focus on user location in the navigation screen.
 
 ## Improvement
 - Add destination marker to the navigation screen.
@@ -25,3 +24,4 @@
 ## DONE
 - Improve location precision in navigation screen.
 - Stop location updates when needed.
+- Initial focus on user location in the navigation screen.

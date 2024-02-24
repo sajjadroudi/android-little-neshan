@@ -26,6 +26,7 @@ import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultList
 import ir.roudi.littleneshan.databinding.FragmentNavigationBinding;
 import ir.roudi.littleneshan.service.NavigationForegroundService;
 import ir.roudi.littleneshan.ui.MainActivity;
+import ir.roudi.littleneshan.utils.LiveDataUtils;
 
 public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, NavigationViewModel> {
 
@@ -122,6 +123,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
         registerReachedDestinationObserver();
         registerFocusOnUserLocationObserver();
         registerRemainingStepsObserver();
+        registerInitialFocusOnUserLocation();
     }
 
     private void registerDirectionObserver() {
@@ -187,6 +189,16 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
             map.showRemainingPathOnMap(steps);
             viewModel.focusOnUserLocation();
         });
+    }
+
+    private void registerInitialFocusOnUserLocation() {
+        LiveDataUtils.observeOnce(
+                viewModel.getUserLocation(),
+                getViewLifecycleOwner(),
+                userLocation -> {
+                    viewModel.focusOnUserLocation();
+                }
+        );
     }
 
     @Override
