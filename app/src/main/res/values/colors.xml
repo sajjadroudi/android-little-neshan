@@ -22,7 +22,7 @@
     <color name="colorRed">#E9474A</color>
 
     <color name="default_container_color">#E8ECEF</color>
-    <color name="color_red">#77F44336</color>
+    <color name="color_red">#FFF44336</color>
     <color name="color_green">#771BB55C</color>
     <color name="color_empty_light">#11000000</color>
     <color name="color_empty_dark">#11ffffff</color>
@@ -34,4 +34,9 @@
     <color name="colorBrown">#795548</color>
     <color name="colorYellow">#FBC02D</color>
     <color name="gray">#bbbbbb</color>
+
+    <color name="blue">#2B84C2</color>
+<!--    <color name="red1">#920C24</color>-->
+    <color name="red">#AF1530</color>
+
 </resources>

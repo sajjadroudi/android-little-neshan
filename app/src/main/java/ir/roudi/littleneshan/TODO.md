@@ -3,6 +3,7 @@
 - Initial focus on user location in the navigation screen.
 
 ## Improvement
+- Add destination marker to the navigation screen.
 - Clean up classes and refactor codes.
 - Define string resources.
 - Use actions for navigation.

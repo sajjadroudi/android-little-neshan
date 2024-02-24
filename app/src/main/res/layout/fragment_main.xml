@@ -36,7 +36,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="10dp"
-                android:tint="@color/colorPrimary"
+                android:tint="@color/blue"
                 app:srcCompat="@drawable/ic_location"
                 android:onClick="@{() -> viewmodel.focusOnUserLocation()}"/>
 
@@ -49,7 +49,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="10dp"
-                android:tint="@color/colorPrimary"
+                android:tint="@color/blue"
                 app:srcCompat="@drawable/ic_night"
                 android:onClick="@{() -> viewmodel.switchTheme()}"/>
 

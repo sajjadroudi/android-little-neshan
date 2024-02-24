@@ -58,7 +58,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_time"
-            android:tint="@color/colorPrimary"
+            android:tint="@color/blue"
             app:layout_constraintBottom_toBottomOf="@id/route"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/route" />
@@ -83,7 +83,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_car"
-            android:tint="@color/colorPrimary"
+            android:tint="@color/blue"
             app:layout_constraintBottom_toBottomOf="@id/route"
             app:layout_constraintEnd_toStartOf="@id/durationIcon"
             app:layout_constraintHorizontal_bias="0.55"

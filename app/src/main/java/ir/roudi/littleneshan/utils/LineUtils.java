@@ -14,7 +14,7 @@ public class LineUtils {
 
     public static LineStyle buildLineStyle(Context context) {
         var builder = new LineStyleBuilder();
-        var color = new Color(ContextCompat.getColor(context, R.color.colorPrimaryDim75));
+        var color = new Color(ContextCompat.getColor(context, R.color.blue));
         builder.setColor(color);
         builder.setWidth(10f);
         builder.setStretchFactor(0f);

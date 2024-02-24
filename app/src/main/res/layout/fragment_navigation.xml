@@ -48,7 +48,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="10dp"
-            android:tint="@color/colorPrimary"
+            android:tint="@color/blue"
             app:srcCompat="@drawable/ic_location"
             android:onClick="@{() -> viewmodel.focusOnUserLocation()}"
             app:layout_constraintEnd_toEndOf="parent"
@@ -103,7 +103,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_car"
-                android:tint="@color/colorPrimary"
+                android:tint="@color/blue"
                 android:layout_marginHorizontal="6dp"/>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -126,7 +126,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_time"
-                android:tint="@color/colorPrimary"
+                android:tint="@color/blue"
                 android:layout_marginHorizontal="6dp" />
 
         </LinearLayout>
