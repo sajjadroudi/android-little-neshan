@@ -1,16 +1,13 @@
 ## Bug
 - Update distance and duration automatically in the navigation screen.
-- 
+- Initial focus on user location in the navigation screen.
 
 ## Improvement
 - Clean up classes and refactor codes.
 - Define string resources.
-- Maybe it's better to add progress bar.
 - Use actions for navigation.
 - Use parcelable instead of serializable.
-- Stop location updates when needed.
 - Add "return to the path" feature to the navigation screen.
-- Subscribe location with more precise config in the navigation screen.
 - Advance navigation.
   - Like checking that the user is getting backward or he/she are far from the path.
 - Check di components.
@@ -26,3 +23,4 @@
 
 ## DONE
 - Improve location precision in navigation screen.
+- Stop location updates when needed.
