@@ -1,5 +1,7 @@
 package ir.roudi.littleneshan.di;
 
+import javax.inject.Singleton;
+
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
@@ -17,6 +19,7 @@ import ir.roudi.littleneshan.data.repository.navigation.NavigationRepositoryDefa
 public abstract class RepositoryModule {
 
     @Provides
+    @Singleton
     public static LocationRepository provideLocationRepository(
             LocationRepositoryDefault defaultLocationRepo,
             LocationRepositoryFake fakeLocationRepo
@@ -29,6 +32,7 @@ public abstract class RepositoryModule {
     }
 
     @Binds
+    @Singleton
     public abstract NavigationRepository bindNavigationRepository(
             NavigationRepositoryDefault navigationRepository
     );

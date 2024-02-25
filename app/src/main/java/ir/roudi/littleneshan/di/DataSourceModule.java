@@ -1,5 +1,7 @@
 package ir.roudi.littleneshan.di;
 
+import javax.inject.Singleton;
+
 import dagger.Binds;
 import dagger.Module;
 import dagger.hilt.InstallIn;
@@ -12,6 +14,7 @@ import ir.roudi.littleneshan.data.remote.NavigationRemoteDataSourceDefault;
 public abstract class DataSourceModule {
 
     @Binds
+    @Singleton
     public abstract NavigationRemoteDataSource provideNavigationRemoteDataSource(
             NavigationRemoteDataSourceDefault navigationRemoteDataSource
     );
