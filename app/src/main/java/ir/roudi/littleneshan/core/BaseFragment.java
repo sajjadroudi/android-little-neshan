@@ -33,6 +33,7 @@ public abstract class BaseFragment<DB extends ViewDataBinding, VM extends BaseVi
     ) {
         log("onCreateView");
         binding = DataBindingUtil.inflate(getLayoutInflater(), getLayoutId(), container, false);
+        binding.setLifecycleOwner(getViewLifecycleOwner());
         return binding.getRoot();
     }
 

@@ -36,23 +36,48 @@ public class NavigationViewModel extends BaseViewModel {
     private final LocationRepository locationRepository;
     private final NavigationRepository navigationRepository;
 
-    private final MutableLiveData<DirectionModel> direction = new MutableLiveData<>();
-
     private final MutableLiveData<List<NavigationPointModel>> remainingNavigationPoints = new MutableLiveData<>(List.of());
 
     private final MutableLiveData<Event<Boolean>> reachedDestination = new MutableLiveData<>(new Event<>(false));
 
     private final MutableLiveData<Event<LocationModel>> focusOnUserLocationEvent = new MutableLiveData<>(new Event<>(null));
 
-    private final LiveData<StepModel> currentStep = Transformations.map(remainingNavigationPoints, points -> {
-                return points.isEmpty() ? null : points.get(0).getStep();
-            }
-    );
-
     private final LiveData<List<LocationModel>> remainingPointsPath = Transformations.map(remainingNavigationPoints, points -> {
         return points.stream()
                 .map(NavigationPointModel::getPoint)
                 .collect(Collectors.toList());
+    });
+
+    private final LiveData<List<StepModel>> remainingSteps = Transformations.map(remainingNavigationPoints, points -> {
+        return points.stream()
+                .map(NavigationPointModel::getStep)
+                .distinct()
+                .collect(Collectors.toList());
+    });
+
+    private final LiveData<StepModel> currentStep = Transformations.map(remainingSteps, steps -> {
+                return (steps == null || steps.isEmpty()) ? null : steps.get(0);
+            }
+    );
+
+    private final LiveData<String> remainingDistance = Transformations.map(remainingSteps, steps -> {
+        var distanceInMeter = steps.stream()
+                .map(it -> it.getDistance().getValue())
+                .reduce(Integer::sum)
+                .orElse(0);
+        return distanceInMeter + " متر";
+    });
+
+    private final LiveData<String> remainingDuration = Transformations.map(remainingSteps, steps -> {
+        var durationInSeconds = steps.stream()
+                .map(it -> it.getDuration().getValue())
+                .reduce(Integer::sum)
+                .orElse(0);
+        var durationInMinutes = durationInSeconds / 60;
+        if(durationInMinutes == 0) {
+            return "کمتر از ۱ دقیقه";
+        }
+        return durationInMinutes + " دقیقه";
     });
 
 
@@ -107,8 +132,6 @@ public class NavigationViewModel extends BaseViewModel {
                         var routingPoints = toRoutingPoints(direction.getSteps());
                         NavigationViewModel.this.routingPoints = routingPoints;
                         remainingNavigationPoints.postValue(routingPoints);
-
-                        NavigationViewModel.this.direction.setValue(direction);
 
                         updateUserProgress();
                     }
@@ -175,10 +198,6 @@ public class NavigationViewModel extends BaseViewModel {
         return focusOnUserLocationEvent;
     }
 
-    public LiveData<DirectionModel> getDirection() {
-        return direction;
-    }
-
     public LiveData<List<LocationModel>> getRemainingPointsPath() {
         return remainingPointsPath;
     }
@@ -208,6 +227,14 @@ public class NavigationViewModel extends BaseViewModel {
 
     public LiveData<StepModel> getCurrentStep() {
         return currentStep;
+    }
+
+    public LiveData<String> getRemainingDuration() {
+        return remainingDuration;
+    }
+
+    public LiveData<String> getRemainingDistance() {
+        return remainingDistance;
     }
 
     @Override

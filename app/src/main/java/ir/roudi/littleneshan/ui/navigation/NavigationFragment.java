@@ -124,33 +124,12 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
     }
 
     private void registerObservers() {
-        registerDirectionObserver();
         registerUserLocationObserver();
         registerReachedDestinationObserver();
         registerFocusOnUserLocationObserver();
         registerRemainingStepsObserver();
         registerCurrentStepObserver();
         registerInitialFocusOnUserLocation();
-    }
-
-    private void registerDirectionObserver() {
-        viewModel.getDirection().observe(getViewLifecycleOwner(), direction -> {
-            if (direction == null)
-                return;
-
-            binding.distance.setText(direction.getDistance().getText());
-
-            binding.duration.setText(direction.getDuration().getText());
-
-            var steps = direction.getSteps();
-
-            if (steps == null || steps.isEmpty())
-                return;
-
-            var firstStepOfNavigation = steps.get(0);
-            var text = "بعدی: " + firstStepOfNavigation.getName() + "\n" + firstStepOfNavigation.getDistance().getText() + " دیگر " + firstStepOfNavigation.getInstruction();
-            binding.address.setText(text);
-        });
     }
 
     private void registerUserLocationObserver() {
