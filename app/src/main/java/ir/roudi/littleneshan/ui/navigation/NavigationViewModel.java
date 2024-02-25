@@ -135,16 +135,6 @@ public class NavigationViewModel extends BaseViewModel {
         Log.i("rouditest", "updateUserProgress: 6: current-next=" + currentPointToNextPointDistance);
         Log.i("rouditest", "updateUserProgress: 7: current-user=" + currentPointToUserPointDistance);
 
-        var userShouldBeLocatedOnTheFirstStep = (lastReachedPointIndex == 0);
-        var userIsNotLocatedOnTheFirstStep = (currentPointToUserPointDistance > 50);
-
-        Log.i("rouditest", "updateUserProgress: 8: userShouldBeLocatedOnTheFirstStep=" + userShouldBeLocatedOnTheFirstStep);
-        Log.i("rouditest", "updateUserProgress: 9: userIsNotLocatedOnTheFirstStep=" + userIsNotLocatedOnTheFirstStep);
-
-        if(userShouldBeLocatedOnTheFirstStep && userIsNotLocatedOnTheFirstStep) {
-            return;
-        }
-
         var userIsPassedCurrentPoint = (currentPointToUserPointDistance >= currentPointToNextPointDistance);
         Log.i("rouditest", "updateUserProgress: 10: userIsPassedCurrentStep=" + userIsPassedCurrentPoint);
         if(userIsPassedCurrentPoint) {

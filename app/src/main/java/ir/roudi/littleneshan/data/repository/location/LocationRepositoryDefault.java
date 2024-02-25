@@ -84,7 +84,6 @@ public class LocationRepositoryDefault implements LocationRepository {
     ) {
         unsubscribeFromReceivingLocationUpdates();
 
-        // TODO: Maybe need to cache same object of location settings response task
         buildDefaultLocationSettingsResponseTask(request.toLocationRequest())
                 .addOnFailureListener(new OnFailureListener() {
                     @Override

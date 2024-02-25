@@ -138,8 +138,6 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
                     var icon = map.isNightTheme() ? R.drawable.ic_night : R.drawable.ic_light;
                     binding.btnTheme.setImageResource(icon);
-
-                    // TODO: Change color of buttons
                 }
             });
         });
