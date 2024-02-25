@@ -18,8 +18,24 @@ public class LiveDataUtils {
         liveData.observe(lifecycleOwner, new Observer<T>() {
             @Override
             public void onChanged(T t) {
-                observer.onChanged(t);
                 liveData.removeObserver(this);
+                observer.onChanged(t);
+            }
+        });
+    }
+
+    public static <T> void firstNonNull(
+            LiveData<T> liveData,
+            LifecycleOwner lifecycleOwner,
+            Observer<T> observer
+    ) {
+        liveData.observe(lifecycleOwner, new Observer<T>() {
+            @Override
+            public void onChanged(T t) {
+                if(t != null) {
+                    liveData.removeObserver(this);
+                    observer.onChanged(t);
+                }
             }
         });
     }

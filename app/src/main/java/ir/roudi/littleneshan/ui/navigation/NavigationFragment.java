@@ -138,15 +138,28 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
             var steps = direction.getSteps();
 
-            if (steps == null || steps.size() < 2)
+            if (steps == null || steps.isEmpty())
                 return;
 
-            var nextStep = steps.get(0); // TODO: Maybe we need to get 1st item instead of 0th item
-            var text = "بعدی: " + nextStep.getName() + "\n" + nextStep.getDistance().getText() + " دیگر " + nextStep.getInstruction();
+            var firstStepOfNavigation = steps.get(0);
+            var text = "بعدی: " + firstStepOfNavigation.getName() + "\n" + firstStepOfNavigation.getDistance().getText() + " دیگر " + firstStepOfNavigation.getInstruction();
             binding.address.setText(text);
 
-            var bearing = steps.get(0).getStartPoint().bearingTo(steps.get(1).getStartPoint());
-            map.setBearing(bearing);
+            LiveDataUtils.firstNonNull(viewModel.getUserLocation(), getViewLifecycleOwner(), userLocation -> {
+                var startPointOfNavigationPath = firstStepOfNavigation.getStartPoint();
+
+                var bearing = startPointOfNavigationPath.bearingTo(userLocation);
+                var distance = userLocation.distanceTo(startPointOfNavigationPath);
+
+                var thereIsMoreThanOneStep = (steps.size() > 1);
+                var userIsTooCloseToStartPoint = (distance < 5);
+                if(userIsTooCloseToStartPoint && thereIsMoreThanOneStep) {
+                    var secondPointOfNavigationPath = steps.get(1).getStartPoint();
+                    bearing = startPointOfNavigationPath.bearingTo(secondPointOfNavigationPath);
+                }
+
+                map.setBearing(bearing);
+            });
         });
     }
 

@@ -1,5 +1,6 @@
 ## Bug
 - Update distance and duration automatically in the navigation screen.
+- Improve guide in the navigation screen.
 
 ## Improvement
 - Clean up classes and refactor codes.
