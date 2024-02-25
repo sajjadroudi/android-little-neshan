@@ -129,6 +129,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
         registerReachedDestinationObserver();
         registerFocusOnUserLocationObserver();
         registerRemainingStepsObserver();
+        registerCurrentStepObserver();
         registerInitialFocusOnUserLocation();
     }
 
@@ -197,6 +198,16 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
             map.showPathOnMap(routingPoints);
             viewModel.focusOnUserLocation();
+        });
+    }
+
+    private void registerCurrentStepObserver() {
+        viewModel.getCurrentStep().observe(getViewLifecycleOwner(), step -> {
+            if(step == null)
+                return;
+
+            var text = "بعدی: " + step.getName() + "\n" + step.getDistance().getText() + " دیگر " + step.getInstruction();
+            binding.address.setText(text);
         });
     }
 

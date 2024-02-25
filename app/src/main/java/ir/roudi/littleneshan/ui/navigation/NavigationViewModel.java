@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,11 +38,23 @@ public class NavigationViewModel extends BaseViewModel {
 
     private final MutableLiveData<DirectionModel> direction = new MutableLiveData<>();
 
-    private final MutableLiveData<List<LocationModel>> remainingPointsPath = new MutableLiveData<>(List.of());
+    private final MutableLiveData<List<NavigationPointModel>> remainingNavigationPoints = new MutableLiveData<>(List.of());
 
     private final MutableLiveData<Event<Boolean>> reachedDestination = new MutableLiveData<>(new Event<>(false));
 
     private final MutableLiveData<Event<LocationModel>> focusOnUserLocationEvent = new MutableLiveData<>(new Event<>(null));
+
+    private final LiveData<StepModel> currentStep = Transformations.map(remainingNavigationPoints, points -> {
+                return points.isEmpty() ? null : points.get(0).getStep();
+            }
+    );
+
+    private final LiveData<List<LocationModel>> remainingPointsPath = Transformations.map(remainingNavigationPoints, points -> {
+        return points.stream()
+                .map(NavigationPointModel::getPoint)
+                .collect(Collectors.toList());
+    });
+
 
     private final LiveData<LocationModel> userLocation;
 
@@ -49,7 +62,7 @@ public class NavigationViewModel extends BaseViewModel {
 
     private int lastReachedPointIndex = 0;
 
-    private List<LocationModel> routingPoints = new ArrayList<>();
+    private List<NavigationPointModel> routingPoints = new ArrayList<>();
 
     @Inject
     public NavigationViewModel(
@@ -93,7 +106,7 @@ public class NavigationViewModel extends BaseViewModel {
 
                         var routingPoints = toRoutingPoints(direction.getSteps());
                         NavigationViewModel.this.routingPoints = routingPoints;
-                        remainingPointsPath.postValue(routingPoints);
+                        remainingNavigationPoints.postValue(routingPoints);
 
                         NavigationViewModel.this.direction.setValue(direction);
 
@@ -142,7 +155,7 @@ public class NavigationViewModel extends BaseViewModel {
 
             Log.i("rouditest", "updateUserProgress: 11: lastReachedStepIndex=" + lastReachedPointIndex);
             var remaining = routingPoints.subList(lastReachedPointIndex, routingPoints.size());
-            remainingPointsPath.postValue(remaining);
+            remainingNavigationPoints.postValue(remaining);
 
             var reachedDestination = (remaining.size() <= 2);
             Log.i("rouditest", "updateUserProgress: 12: reachedDestination=" + reachedDestination);
@@ -182,11 +195,19 @@ public class NavigationViewModel extends BaseViewModel {
         locationRepository.setUserLocation(location);
     }
 
-    private List<LocationModel> toRoutingPoints(List<StepModel> steps) {
+    private List<NavigationPointModel> toRoutingPoints(List<StepModel> steps) {
         return steps.stream()
-                .map(StepModel::getRoutingPoints)
+                .map(step -> step.getRoutingPoints()
+                        .stream()
+                        .map(location -> new NavigationPointModel(location, step))
+                        .collect(Collectors.toList())
+                )
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    public LiveData<StepModel> getCurrentStep() {
+        return currentStep;
     }
 
     @Override
