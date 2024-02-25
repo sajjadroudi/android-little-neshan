@@ -201,11 +201,11 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
     }
 
     private void registerRemainingStepsObserver() {
-        viewModel.getRemainingSteps().observe(getViewLifecycleOwner(), steps -> {
-            if (steps == null)
+        viewModel.getRemainingPointsPath().observe(getViewLifecycleOwner(), routingPoints -> {
+            if (routingPoints == null)
                 return;
 
-            map.showRemainingPathOnMap(steps);
+            map.showPathOnMap(routingPoints);
             viewModel.focusOnUserLocation();
         });
     }

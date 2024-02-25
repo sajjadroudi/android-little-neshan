@@ -1,9 +1,14 @@
 package ir.roudi.littleneshan.ui.navigation;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -32,7 +37,7 @@ public class NavigationViewModel extends BaseViewModel {
 
     private final MutableLiveData<DirectionModel> direction = new MutableLiveData<>();
 
-    private final MutableLiveData<List<StepModel>> remainingSteps = new MutableLiveData<>(List.of());
+    private final MutableLiveData<List<LocationModel>> remainingPointsPath = new MutableLiveData<>(List.of());
 
     private final MutableLiveData<Event<Boolean>> reachedDestination = new MutableLiveData<>(new Event<>(false));
 
@@ -42,7 +47,9 @@ public class NavigationViewModel extends BaseViewModel {
 
     private Disposable loadDirectionDisposable;
 
-    private int lastReachedStepIndex = 0;
+    private int lastReachedPointIndex = 0;
+
+    private List<LocationModel> routingPoints = new ArrayList<>();
 
     @Inject
     public NavigationViewModel(
@@ -82,11 +89,15 @@ public class NavigationViewModel extends BaseViewModel {
 
                     @Override
                     public void onSuccess(@NonNull DirectionModel direction) {
-                        lastReachedStepIndex = 0;
+                        lastReachedPointIndex = 0;
 
-                        remainingSteps.postValue(direction.getSteps());
+                        var routingPoints = toRoutingPoints(direction.getSteps());
+                        NavigationViewModel.this.routingPoints = routingPoints;
+                        remainingPointsPath.postValue(routingPoints);
 
-                        NavigationViewModel.this.direction.postValue(direction);
+                        NavigationViewModel.this.direction.setValue(direction);
+
+                        updateUserProgress();
                     }
 
                     @Override
@@ -101,42 +112,50 @@ public class NavigationViewModel extends BaseViewModel {
     }
 
     public void updateUserProgress() {
-        var direction = this.direction.getValue();
-        if(direction == null) {
-            return;
-        }
-
-        List<StepModel> steps = direction.getSteps();
-
-        if(steps == null || steps.size() < 2) {
+        Log.i("rouditest", "updateUserProgress: 2: " + (routingPoints == null ? null : routingPoints.size()));
+        if(routingPoints == null || routingPoints.size() < 2) {
             return;
         }
 
         var userLocation = this.userLocation.getValue();
+        Log.i("rouditest", "updateUserProgress: 3: " + userLocation);
         if(userLocation == null) {
             return;
         }
 
-        var currentStep = steps.get(lastReachedStepIndex);
-        var nextStep = steps.get(lastReachedStepIndex + 1);
+        var currentPoint = routingPoints.get(lastReachedPointIndex);
+        var nextPoint = routingPoints.get(lastReachedPointIndex + 1);
 
-        var currentStepToNextStepDistance = currentStep.getStartPoint().distanceTo(nextStep.getStartPoint());
-        var currentStepToUserLocationDistance = currentStep.getStartPoint().distanceTo(userLocation);
+        Log.i("rouditest", "updateUserProgress: 4: current=" + currentPoint);
+        Log.i("rouditest", "updateUserProgress: 5: next=" + nextPoint);
 
-        var userShouldBeLocatedOnTheFirstStep = (lastReachedStepIndex == 0);
-        var userIsNotLocatedOnTheFirstStep = (currentStepToUserLocationDistance > 5);
+        var currentPointToNextPointDistance = currentPoint.distanceTo(nextPoint);
+        var currentPointToUserPointDistance = currentPoint.distanceTo(userLocation);
+
+        Log.i("rouditest", "updateUserProgress: 6: current-next=" + currentPointToNextPointDistance);
+        Log.i("rouditest", "updateUserProgress: 7: current-user=" + currentPointToUserPointDistance);
+
+        var userShouldBeLocatedOnTheFirstStep = (lastReachedPointIndex == 0);
+        var userIsNotLocatedOnTheFirstStep = (currentPointToUserPointDistance > 10);
+
+        Log.i("rouditest", "updateUserProgress: 8: userShouldBeLocatedOnTheFirstStep=" + userShouldBeLocatedOnTheFirstStep);
+        Log.i("rouditest", "updateUserProgress: 9: userIsNotLocatedOnTheFirstStep=" + userIsNotLocatedOnTheFirstStep);
+
         if(userShouldBeLocatedOnTheFirstStep && userIsNotLocatedOnTheFirstStep) {
             return;
         }
 
-        var userIsPassedCurrentStep = (currentStepToUserLocationDistance >= currentStepToNextStepDistance);
-        if(userIsPassedCurrentStep) {
-            lastReachedStepIndex++;
+        var userIsPassedCurrentPoint = (currentPointToUserPointDistance >= currentPointToNextPointDistance);
+        Log.i("rouditest", "updateUserProgress: 10: userIsPassedCurrentStep=" + userIsPassedCurrentPoint);
+        if(userIsPassedCurrentPoint) {
+            lastReachedPointIndex++;
 
-            var remaining = steps.subList(lastReachedStepIndex, steps.size());
-            remainingSteps.postValue(remaining);
+            Log.i("rouditest", "updateUserProgress: 11: lastReachedStepIndex=" + lastReachedPointIndex);
+            var remaining = routingPoints.subList(lastReachedPointIndex, routingPoints.size());
+            remainingPointsPath.postValue(remaining);
 
             var reachedDestination = (remaining.size() <= 1);
+            Log.i("rouditest", "updateUserProgress: 12: reachedDestination=" + reachedDestination);
             this.reachedDestination.postValue(new Event<>(reachedDestination));
         }
     }
@@ -154,8 +173,8 @@ public class NavigationViewModel extends BaseViewModel {
         return direction;
     }
 
-    public LiveData<List<StepModel>> getRemainingSteps() {
-        return remainingSteps;
+    public LiveData<List<LocationModel>> getRemainingPointsPath() {
+        return remainingPointsPath;
     }
 
     public LiveData<Event<Boolean>> getReachedDestination() {
@@ -168,6 +187,13 @@ public class NavigationViewModel extends BaseViewModel {
 
     public void setUserLocation(LocationModel location) {
         locationRepository.setUserLocation(location);
+    }
+
+    private List<LocationModel> toRoutingPoints(List<StepModel> steps) {
+        return steps.stream()
+                .map(StepModel::getRoutingPoints)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     @Override

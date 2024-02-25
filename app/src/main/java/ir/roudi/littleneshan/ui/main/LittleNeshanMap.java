@@ -13,6 +13,7 @@ import org.neshan.mapsdk.style.NeshanMapStyle;
 import java.util.ArrayList;
 
 import ir.roudi.littleneshan.R;
+import ir.roudi.littleneshan.core.Config;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.utils.LineUtils;
 import ir.roudi.littleneshan.utils.MarkerUtils;
@@ -37,8 +38,8 @@ public class LittleNeshanMap {
     }
 
     private void setupMap() {
-        map.setTrafficEnabled(true);
-        map.setPoiEnabled(true);
+        map.setTrafficEnabled(!Config.USE_FAKE_USER_LOCATION);
+        map.setPoiEnabled(!Config.USE_FAKE_USER_LOCATION);
     }
 
     public void showPathOnMap(String pathPolyline, LocationModel start, LocationModel end) {

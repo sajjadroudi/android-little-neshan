@@ -3,19 +3,16 @@ package ir.roudi.littleneshan.ui.navigation;
 import androidx.annotation.NonNull;
 
 import org.neshan.common.model.LatLng;
-import org.neshan.common.utils.PolylineEncoding;
 import org.neshan.mapsdk.MapView;
 import org.neshan.mapsdk.model.Marker;
 import org.neshan.mapsdk.model.Polyline;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
-import ir.roudi.littleneshan.data.model.StepModel;
 import ir.roudi.littleneshan.core.Config;
 import ir.roudi.littleneshan.utils.LineUtils;
 import ir.roudi.littleneshan.utils.MarkerUtils;
@@ -45,9 +42,9 @@ public class NavigationMap {
         map.setMyLocationEnabled(Config.SHOW_USER_LOCATION_BY_NESHAN);
     }
 
-    public void showRemainingPathOnMap(List<StepModel> remainingSteps) {
+    public void showPathOnMap(List<LocationModel> routingPoints) {
         removePathIfExists();
-        addPathToMap(remainingSteps);
+        addPathToMap(routingPoints);
     }
 
     private void removePathIfExists() {
@@ -56,24 +53,23 @@ public class NavigationMap {
         }
     }
 
-    private void addPathToMap(List<StepModel> remainingSteps) {
-        remainingPathPolyline = buildPolyline(remainingSteps);
+    private void addPathToMap(List<LocationModel> routingPoints) {
+        remainingPathPolyline = buildPolyline(routingPoints);
         map.addPolyline(remainingPathPolyline);
     }
 
-    private Polyline buildPolyline(List<StepModel> remainingSteps) {
-        ArrayList<LatLng> pointsOfRemainingPath = extractPointsOfPath(remainingSteps);
+    private Polyline buildPolyline(List<LocationModel> routingPoints) {
+        ArrayList<LatLng> pointsOfRemainingPath = prepareRoutingPoints(routingPoints);
         var lineStyle = LineUtils.buildLineStyle(map.getContext());
         return new Polyline(pointsOfRemainingPath, lineStyle);
     }
 
     @NonNull
-    private static ArrayList<LatLng> extractPointsOfPath(List<StepModel> remainingSteps) {
-        var pointsOfRemainingPath = remainingSteps.stream()
-                .map(step -> PolylineEncoding.decode(step.getEncodedPolyline()))
-                .flatMap(Collection::stream)
+    private static ArrayList<LatLng> prepareRoutingPoints(List<LocationModel> routingPoints) {
+        var points = routingPoints.stream()
+                .map(LocationModel::toLatLng)
                 .collect(Collectors.toList());
-        return new ArrayList<>(pointsOfRemainingPath);
+        return new ArrayList<>(points);
     }
 
     public void focusOnLocation(LocationModel location) {

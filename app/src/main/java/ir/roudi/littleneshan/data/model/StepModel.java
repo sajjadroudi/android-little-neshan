@@ -2,6 +2,11 @@ package ir.roudi.littleneshan.data.model;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import ir.roudi.littleneshan.utils.PolylineEncoder;
+
 public class StepModel {
     private final String name;
     private final String instruction;
@@ -9,6 +14,7 @@ public class StepModel {
     private final DurationModel duration;
     private final LocationModel startPoint;
     private final String encodedPolyline;
+    private final List<LocationModel> routingPoints;
 
     public StepModel(
             String name,
@@ -24,6 +30,7 @@ public class StepModel {
         this.duration = duration;
         this.startPoint = startPoint;
         this.encodedPolyline = encodedPolyline;
+        this.routingPoints = PolylineEncoder.decode(encodedPolyline);
     }
 
     public String getName() {
@@ -48,6 +55,10 @@ public class StepModel {
 
     public String getEncodedPolyline() {
         return encodedPolyline;
+    }
+
+    public List<LocationModel> getRoutingPoints() {
+        return new ArrayList<>(routingPoints);
     }
 
     @NonNull
