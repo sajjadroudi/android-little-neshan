@@ -149,22 +149,6 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
             var firstStepOfNavigation = steps.get(0);
             var text = "بعدی: " + firstStepOfNavigation.getName() + "\n" + firstStepOfNavigation.getDistance().getText() + " دیگر " + firstStepOfNavigation.getInstruction();
             binding.address.setText(text);
-
-            LiveDataUtils.firstNonNull(viewModel.getUserLocation(), getViewLifecycleOwner(), userLocation -> {
-                var startPointOfNavigationPath = firstStepOfNavigation.getStartPoint();
-
-                var bearing = startPointOfNavigationPath.bearingTo(userLocation);
-                var distance = userLocation.distanceTo(startPointOfNavigationPath);
-
-                var thereIsMoreThanOneStep = (steps.size() > 1);
-                var userIsTooCloseToStartPoint = (distance < 5);
-                if(userIsTooCloseToStartPoint && thereIsMoreThanOneStep) {
-                    var secondPointOfNavigationPath = steps.get(1).getStartPoint();
-                    bearing = startPointOfNavigationPath.bearingTo(secondPointOfNavigationPath);
-                }
-
-                map.setBearing(bearing);
-            });
         });
     }
 
@@ -202,8 +186,14 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
     private void registerRemainingStepsObserver() {
         viewModel.getRemainingPointsPath().observe(getViewLifecycleOwner(), routingPoints -> {
-            if (routingPoints == null)
+            if (routingPoints == null || routingPoints.isEmpty())
                 return;
+
+            var userLocation = viewModel.getUserLocation().getValue();
+            if(userLocation != null) {
+                float bearing = userLocation.bearingTo(routingPoints.get(0));
+                map.setBearing(bearing);
+            }
 
             map.showPathOnMap(routingPoints);
             viewModel.focusOnUserLocation();

@@ -136,7 +136,7 @@ public class NavigationViewModel extends BaseViewModel {
         Log.i("rouditest", "updateUserProgress: 7: current-user=" + currentPointToUserPointDistance);
 
         var userShouldBeLocatedOnTheFirstStep = (lastReachedPointIndex == 0);
-        var userIsNotLocatedOnTheFirstStep = (currentPointToUserPointDistance > 10);
+        var userIsNotLocatedOnTheFirstStep = (currentPointToUserPointDistance > 50);
 
         Log.i("rouditest", "updateUserProgress: 8: userShouldBeLocatedOnTheFirstStep=" + userShouldBeLocatedOnTheFirstStep);
         Log.i("rouditest", "updateUserProgress: 9: userIsNotLocatedOnTheFirstStep=" + userIsNotLocatedOnTheFirstStep);
@@ -154,9 +154,12 @@ public class NavigationViewModel extends BaseViewModel {
             var remaining = routingPoints.subList(lastReachedPointIndex, routingPoints.size());
             remainingPointsPath.postValue(remaining);
 
-            var reachedDestination = (remaining.size() <= 1);
+            var reachedDestination = (remaining.size() <= 2);
             Log.i("rouditest", "updateUserProgress: 12: reachedDestination=" + reachedDestination);
-            this.reachedDestination.postValue(new Event<>(reachedDestination));
+            if(reachedDestination) {
+                lastReachedPointIndex = 0;
+                this.reachedDestination.postValue(new Event<>(true));
+            }
         }
     }
 

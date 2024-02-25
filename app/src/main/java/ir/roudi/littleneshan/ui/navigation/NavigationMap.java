@@ -36,8 +36,8 @@ public class NavigationMap {
 
     private void setupMap(int mapStyle) {
         map.setMapStyle(mapStyle);
-        map.setTrafficEnabled(true);
-        map.setPoiEnabled(true);
+        map.setTrafficEnabled(!Config.USE_FAKE_USER_LOCATION);
+        map.setPoiEnabled(!Config.USE_FAKE_USER_LOCATION);
         map.setTilt(40f, 0f);
         map.setMyLocationEnabled(Config.SHOW_USER_LOCATION_BY_NESHAN);
     }
