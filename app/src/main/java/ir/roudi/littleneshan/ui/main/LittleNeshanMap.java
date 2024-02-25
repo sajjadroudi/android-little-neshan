@@ -18,6 +18,7 @@ import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.utils.LineUtils;
 import ir.roudi.littleneshan.utils.MarkerUtils;
 import ir.roudi.littleneshan.utils.OnMapClickListener;
+import ir.roudi.littleneshan.utils.PolylineEncoder;
 
 public class LittleNeshanMap {
 
@@ -45,7 +46,7 @@ public class LittleNeshanMap {
     public void showPathOnMap(String pathPolyline, LocationModel start, LocationModel end) {
         removePathIfExists();
         addPathToMap(pathPolyline);
-        changeCameraToShowWholePath(start, end);
+        changeCameraToShowWholePath(pathPolyline, start, end);
     }
 
     private void removePathIfExists() {
@@ -61,14 +62,34 @@ public class LittleNeshanMap {
         map.addPolyline(routingPathPolyLine);
     }
 
-    private void changeCameraToShowWholePath(LocationModel start, LocationModel end) {
-        var latLngBounds = new LatLngBounds(start.toLatLng(), end.toLatLng());
+    private void changeCameraToShowWholePath(String pathPolyline, LocationModel start, LocationModel end) {
         float mapWidth = Math.min(map.getWidth(), map.getHeight());
         var screenBounds = new ScreenBounds(
                 new ScreenPos(0F, 0F),
                 new ScreenPos(mapWidth, mapWidth)
         );
-        map.moveToCameraBounds(latLngBounds, screenBounds, true, 0.5f);
+        map.moveToCameraBounds(extractBounds(pathPolyline, start, end), screenBounds, true, 0.5f);
+    }
+
+    private LatLngBounds extractBounds(String pathPolyline, LocationModel source, LocationModel destination) {
+        var points = PolylineEncoder.decode(pathPolyline);
+        points.add(source);
+        points.add(destination);
+
+        float maxDistance = 0;
+        LocationModel start = null, end = null;
+        for(int i = 0; i < points.size(); i++) {
+            for(int j = i + 1; j < points.size(); j++) {
+                var distance = points.get(i).distanceTo(points.get(j));
+                if(distance > maxDistance) {
+                    maxDistance = distance;
+                    start = points.get(i);
+                    end = points.get(j);
+                }
+            }
+        }
+
+        return new LatLngBounds(start.toLatLng(), end.toLatLng());
     }
 
     public void focusOnLocation(LocationModel location) {

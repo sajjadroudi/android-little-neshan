@@ -1,7 +1,6 @@
 ## Bug
 - Update distance and duration automatically in the navigation screen.
 - Improve guide in the navigation screen.
-- Improve camera bounds to cover all the path from source to destination.
 - Improve path polyline drawing to be drawn from user location to destination.
 
 ## Improvement
@@ -28,3 +27,4 @@
 - Stop location updates when needed.
 - Initial focus on user location in the navigation screen.
 - Add destination marker to the navigation screen.
+- Improve camera bounds to cover all the path from source to destination.
