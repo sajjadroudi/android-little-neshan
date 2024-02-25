@@ -16,6 +16,7 @@ import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.utils.LineUtils;
 import ir.roudi.littleneshan.utils.MarkerUtils;
+import ir.roudi.littleneshan.utils.OnMapClickListener;
 
 public class LittleNeshanMap {
 
@@ -132,6 +133,10 @@ public class LittleNeshanMap {
         map.setOnMapLongClickListener(latLng -> {
             listener.onMapLongClick(LocationModel.from(latLng));
         });
+    }
+
+    public void setOnMapClickListener(OnMapClickListener listener) {
+        map.setOnMapClickListener(latLng -> listener.onClick(LocationModel.from(latLng)));
     }
 
 }

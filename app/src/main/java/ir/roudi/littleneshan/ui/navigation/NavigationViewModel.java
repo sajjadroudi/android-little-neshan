@@ -166,6 +166,10 @@ public class NavigationViewModel extends BaseViewModel {
         return userLocation;
     }
 
+    public void setUserLocation(LocationModel location) {
+        locationRepository.setUserLocation(location);
+    }
+
     @Override
     protected void onCleared() {
 

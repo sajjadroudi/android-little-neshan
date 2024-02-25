@@ -16,9 +16,10 @@ import java.util.stream.Collectors;
 import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.model.StepModel;
-import ir.roudi.littleneshan.ui.Config;
+import ir.roudi.littleneshan.core.Config;
 import ir.roudi.littleneshan.utils.LineUtils;
 import ir.roudi.littleneshan.utils.MarkerUtils;
+import ir.roudi.littleneshan.utils.OnMapClickListener;
 
 public class NavigationMap {
 
@@ -127,6 +128,10 @@ public class NavigationMap {
         var style = MarkerUtils.buildMarkerStyle(map.getContext(), R.drawable.ic_destination);
         destinationMarker = new Marker(location.toLatLng(), style);
         map.addMarker(destinationMarker);
+    }
+
+    public void setOnMapClickListener(OnMapClickListener listener) {
+        map.setOnMapClickListener(latLng -> listener.onClick(LocationModel.from(latLng)));
     }
 
 }

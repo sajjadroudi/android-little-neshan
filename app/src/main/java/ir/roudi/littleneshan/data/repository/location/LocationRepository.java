@@ -25,4 +25,7 @@ public interface LocationRepository {
     );
 
     void unsubscribeFromReceivingLocationUpdates();
+
+    void setUserLocation(LocationModel location);
+
 }

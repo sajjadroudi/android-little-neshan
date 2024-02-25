@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 public class LocationModel implements Serializable {
 
-    private static final float DEFAULT_ACCURACY = 100f;
+    private static final float DEFAULT_ACCURACY = 0f;
     private static final float DEFAULT_BEARING = 0f;
 
     private final double latitude;

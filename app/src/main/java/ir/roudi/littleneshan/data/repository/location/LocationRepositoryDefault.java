@@ -137,4 +137,8 @@ public class LocationRepositoryDefault implements LocationRepository {
         return locationSettingsClient.checkLocationSettings(settingsRequest);
     }
 
+    @Override
+    public void setUserLocation(LocationModel location) {
+
+    }
 }

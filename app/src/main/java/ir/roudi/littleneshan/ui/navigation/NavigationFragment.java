@@ -108,14 +108,19 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
         setupNavigationMap();
 
-        registerObservers();
+        registerOnMapClickListener();
 
+        registerObservers();
     }
 
     private void setupNavigationMap() {
         var args = NavigationFragmentArgs.fromBundle(getArguments());
         map = new NavigationMap(binding.map, args.getMapStyle());
         map.markDestinationOnMap(args.getEnd());
+    }
+
+    private void registerOnMapClickListener() {
+        map.setOnMapClickListener(viewModel::setUserLocation);
     }
 
     private void registerObservers() {

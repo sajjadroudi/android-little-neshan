@@ -203,6 +203,10 @@ public class MainViewModel extends BaseViewModel {
         endLocation = null;
     }
 
+    public void setUserLocation(LocationModel location) {
+        locationRepository.setUserLocation(location);
+    }
+
     @Override
     protected void onCleared() {
         if(navigationPathDisposable != null && !navigationPathDisposable.isDisposed())

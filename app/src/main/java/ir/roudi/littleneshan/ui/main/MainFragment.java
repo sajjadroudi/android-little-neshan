@@ -4,7 +4,6 @@ import static androidx.navigation.fragment.FragmentKt.findNavController;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.net.Uri;
@@ -54,7 +53,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
 
         startLocationUpdates(false, false);
 
-        registerOnMapClickListener();
+        registerOnMapClickListeners();
     }
 
     private void startLocationUpdates(boolean showTurnOnLocationDialog, boolean showError) {
@@ -86,7 +85,16 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
         });
     }
 
+    private void registerOnMapClickListeners() {
+        registerOnMapClickListener();
+        registerOnMapLongClickListener();
+    }
+
     private void registerOnMapClickListener() {
+        map.setOnMapClickListener(viewModel::setUserLocation);
+    }
+
+    private void registerOnMapLongClickListener() {
         map.setOnMapLongClickListener(destination -> {
             map.markDestinationOnMap(destination);
             viewModel.navigate(destination);
