@@ -20,7 +20,7 @@ import ir.roudi.littleneshan.utils.MarkerUtils;
 import ir.roudi.littleneshan.utils.OnMapClickListener;
 import ir.roudi.littleneshan.utils.PolylineEncoder;
 
-public class LittleNeshanMap {
+public class MainMap {
 
     public interface OnMapLongClickListener {
         void onMapLongClick(LocationModel location);
@@ -32,7 +32,7 @@ public class LittleNeshanMap {
 
     private final MapView map;
 
-    public LittleNeshanMap(MapView map) {
+    public MainMap(MapView map) {
         this.map = map;
 
         setupMap();

@@ -125,7 +125,7 @@ public class MainViewModel extends BaseViewModel {
         navigationRepository
                 .getAddress(endLocation)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new SingleObserver<AddressModel>() {
+                .subscribe(new SingleObserver<>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
                         addressDisposable = d;
@@ -145,7 +145,7 @@ public class MainViewModel extends BaseViewModel {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        if(ExceptionUtils.isDisconnectedToServer(e)) {
+                        if (ExceptionUtils.isDisconnectedToServer(e)) {
                             showError(R.string.connection_to_server_error);
                         } else {
                             showError(R.string.something_went_wrong);

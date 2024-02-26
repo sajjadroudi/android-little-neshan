@@ -36,7 +36,7 @@ import ir.roudi.littleneshan.utils.PermissionUtils;
 
 public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewModel> {
 
-    private LittleNeshanMap map;
+    private MainMap map;
 
     @Override
     public Class<MainViewModel> getViewModelClass() {
@@ -118,7 +118,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        map = new LittleNeshanMap(binding.map);
+        map = new MainMap(binding.map);
 
         binding.setViewmodel(viewModel);
 
