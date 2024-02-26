@@ -159,7 +159,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     private void registerFocusOnUserLocationObserver() {
         viewModel.getFocusOnUserLocationEvent().observe(getViewLifecycleOwner(), event -> {
             event.doIfNotHandled(focusOnUserLocation -> {
-                requestLocationPermission(true, true, true);
+                requestLocationPermission();
 
                 var location = viewModel.getUserLocation().getValue();
                 if (location != null) {
@@ -167,6 +167,11 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                 }
             });
         });
+    }
+
+    private void showLocation(LocationModel location, boolean isCachedLocation) {
+        map.focusOnLocation(location);
+        map.markUserOnMap(location, isCachedLocation);
     }
 
     private void registerNavigationPathObserver() {
@@ -212,11 +217,12 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                 .observe(getViewLifecycleOwner(), object -> {
                     if (object instanceof Boolean) {
                         boolean doesStartNavigation = (Boolean) object;
-                        if(doesStartNavigation) {
+                        if (doesStartNavigation) {
                             viewModel.navigateToNavigationScreen();
                         } else {
                             viewModel.clearNavigationData();
-                            map.clear();                        }
+                            map.clear();
+                        }
                     }
                 });
     }
@@ -259,26 +265,19 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
         );
     }
 
-    private void showLocation(LocationModel location, boolean isCachedLocation) {
-        map.focusOnLocation(location);
-        map.markUserOnMap(location, isCachedLocation);
-    }
-
     @Override
     public void onStop() {
         viewModel.stopLocationUpdates();
         super.onStop();
     }
 
-    private void requestLocationPermission(
-            boolean openSettings, boolean showTurnOnLocationDialog, boolean showError
-    ) {
+    private void requestLocationPermission() {
         Dexter.withContext(getContext())
                 .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
-                        startLocationUpdates(showTurnOnLocationDialog, showError);
+                        startLocationUpdates(true, true);
                     }
 
                     @Override
@@ -292,7 +291,7 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                         );
 
                         if(isPermissionGranted) {
-                            startLocationUpdates(showTurnOnLocationDialog, showError);
+                            startLocationUpdates(true, true);
                         } else if(isPermissionPermanentlyDenied) {
                             showGrantLocationPermission();
                         }
