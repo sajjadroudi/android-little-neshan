@@ -84,36 +84,57 @@ public class LocationRepositoryDefault implements LocationRepository {
     ) {
         unsubscribeFromReceivingLocationUpdates();
 
-        buildDefaultLocationSettingsResponseTask(request.toLocationRequest())
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if(!(e instanceof ApiException))
-                            return;
+        registerLocationSettingsListener(request, resultListener);
 
-                        final int statusCode = ((ApiException) e).getStatusCode();
-                        if(statusCode == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
-                            try {
-                                if(e instanceof ResolvableApiException) {
-                                    final ResolvableApiException rae = (ResolvableApiException) e;
-                                    resultListener.onRequireResolution(rae);
-                                }
-                            } catch (IntentSender.SendIntentException sie) {
-                                resultListener.onSendIntentException(sie);
+        requestLocationUpdates(request);
+
+        registerLastLocationListener();
+    }
+
+    private void registerLocationSettingsListener(PrecisionLocationRequest request, OnTurnOnLocationResultListener resultListener) {
+        buildDefaultLocationSettingsResponseTask(request)
+                .addOnFailureListener(e -> {
+                    if(!(e instanceof ApiException))
+                        return;
+
+                    final int statusCode = ((ApiException) e).getStatusCode();
+                    if(statusCode == LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+                        try {
+                            if(e instanceof ResolvableApiException) {
+                                final ResolvableApiException rae = (ResolvableApiException) e;
+                                resultListener.onRequireResolution(rae);
                             }
-                        } else if(statusCode == LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE) {
-                            resultListener.onSettingsChangeUnavailable();
+                        } catch (IntentSender.SendIntentException sie) {
+                            resultListener.onSendIntentException(sie);
                         }
-
+                    } else if(statusCode == LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE) {
+                        resultListener.onSettingsChangeUnavailable();
                     }
-                });
 
+                });
+    }
+
+    private Task<LocationSettingsResponse> buildDefaultLocationSettingsResponseTask(
+            PrecisionLocationRequest request
+    ) {
+        LocationSettingsRequest settingsRequest = new LocationSettingsRequest.Builder()
+                .addLocationRequest(request.toLocationRequest())
+                .build();
+
+        return locationSettingsClient.checkLocationSettings(settingsRequest);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void requestLocationUpdates(PrecisionLocationRequest request) {
         locationClient.requestLocationUpdates(
                 request.toLocationRequest(),
                 currentLocationListener,
                 Looper.getMainLooper()
         );
+    }
 
+    @SuppressLint("MissingPermission")
+    private void registerLastLocationListener() {
         locationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
                 lastLocation.postValue(LocationModel.from(location));
@@ -126,18 +147,9 @@ public class LocationRepositoryDefault implements LocationRepository {
         locationClient.removeLocationUpdates(currentLocationListener);
     }
 
-    private Task<LocationSettingsResponse> buildDefaultLocationSettingsResponseTask(
-            LocationRequest request
-    ) {
-        LocationSettingsRequest settingsRequest = new LocationSettingsRequest.Builder()
-                .addLocationRequest(request)
-                .build();
-
-        return locationSettingsClient.checkLocationSettings(settingsRequest);
-    }
-
     @Override
     public void setUserLocation(LocationModel location) {
 
     }
+
 }
