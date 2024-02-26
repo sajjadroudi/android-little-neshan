@@ -26,7 +26,8 @@ public interface NavigationRepository {
 
     boolean updateUserProgress(LocationModel userLocation);
 
-    void finishRouting();
+    void cleanUpRouting();
 
     LocationModel getDestination();
+
 }

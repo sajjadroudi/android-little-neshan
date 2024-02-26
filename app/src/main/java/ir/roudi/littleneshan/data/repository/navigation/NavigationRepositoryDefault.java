@@ -84,14 +84,12 @@ public class NavigationRepositoryDefault implements NavigationRepository {
                     updateUserProgress(userLocation);
 
                     NavigationForegroundService.startService(appContext);
+                })
+                .doOnError(throwable -> {
+                    cleanUpRouting();
                 });
 
         return Completable.fromSingle(single);
-    }
-
-    @Override
-    public LiveData<List<NavigationPointModel>> getRemainingNavigationPoints() {
-        return remainingNavigationPoints;
     }
 
     @Override
@@ -124,7 +122,7 @@ public class NavigationRepositoryDefault implements NavigationRepository {
             var reachedDestination = (remaining.size() <= 2);
 
             if(reachedDestination) {
-                finishRouting();
+                cleanUpRouting();
             }
 
             return reachedDestination;
@@ -147,7 +145,8 @@ public class NavigationRepositoryDefault implements NavigationRepository {
     }
 
     @Override
-    public void finishRouting() {
+    public void cleanUpRouting() {
+        destination = null;
         lastReachedPointIndex = 0;
         routingPoints = new ArrayList<>();
         remainingNavigationPoints.postValue(List.of());
@@ -170,4 +169,10 @@ public class NavigationRepositoryDefault implements NavigationRepository {
     public LocationModel getDestination() {
         return destination;
     }
+
+    @Override
+    public LiveData<List<NavigationPointModel>> getRemainingNavigationPoints() {
+        return remainingNavigationPoints;
+    }
+
 }

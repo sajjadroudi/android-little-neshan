@@ -141,7 +141,7 @@ public class NavigationViewModel extends BaseViewModel {
     @Override
     public void navigateUp() {
         super.navigateUp();
-        navigationRepository.finishRouting();
+        navigationRepository.cleanUpRouting();
     }
 
     public void focusOnUserLocation() {
