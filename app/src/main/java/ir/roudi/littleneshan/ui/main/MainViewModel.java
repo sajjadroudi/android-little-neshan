@@ -66,7 +66,7 @@ public class MainViewModel extends BaseViewModel {
 
         userLocation.addSource(locationRepository.getLastLocation(), location -> {
             var prevLocation = userLocation.getValue();
-            if (prevLocation != null && prevLocation.isCached()) {
+            if (prevLocation == null || prevLocation.isCached()) {
                 var value = new UserLocationUiModel(location, true);
                 userLocation.setValue(value);
             }
