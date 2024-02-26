@@ -55,10 +55,8 @@ public class DestinationDetailsBottomSheet extends BottomSheetDialogFragment {
 
     private void bindUi() {
         var args = DestinationDetailsBottomSheetArgs.fromBundle(getArguments());
-        binding.title.setText(args.getTitle());
-        binding.duration.setText(args.getDuration());
-        binding.distance.setText(args.getDistance());
-        binding.address.setText(args.getAddress());
+        var address = new AddressUiModel(args.getTitle(), args.getDuration(), args.getDistance(), args.getAddress());
+        binding.setAddress(address);
     }
 
     private void registerOnRouteClickListener() {

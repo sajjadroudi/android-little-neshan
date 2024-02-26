@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="address"
+            type="ir.roudi.littleneshan.ui.main.AddressUiModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,7 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="locationAddressDetailLiveData.data.routeName"
+            android:text="@{address.title}"
             android:textColor="@color/colorGrayDarker"
             android:textSize="14sp"
             android:textStyle="bold"
@@ -74,6 +76,7 @@
             android:textColorHint="@color/colorGrayMedium"
             android:textSize="12sp"
             android:textStyle="bold"
+            android:text="@{address.duration}"
             app:layout_constraintBottom_toBottomOf="@id/route"
             app:layout_constraintEnd_toStartOf="@id/durationIcon"
             app:layout_constraintTop_toTopOf="@id/route" />
@@ -101,6 +104,7 @@
             android:textColorHint="@color/colorGrayMedium"
             android:textSize="12sp"
             android:textStyle="bold"
+            android:text="@{address.distance}"
             app:layout_constraintBottom_toBottomOf="@id/route"
             app:layout_constraintEnd_toStartOf="@id/distanceIcon"
             app:layout_constraintTop_toTopOf="@id/route" />
@@ -111,7 +115,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginVertical="15dp"
-            android:text="locationAddressDetailLiveData.data.address"
+            android:text="@{address.address}"
             android:textColor="@color/colorGrayMedium"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
