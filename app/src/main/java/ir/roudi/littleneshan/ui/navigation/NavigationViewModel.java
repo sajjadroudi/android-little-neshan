@@ -35,17 +35,15 @@ public class NavigationViewModel extends BaseViewModel {
 
     private final MutableLiveData<Event<LocationModel>> focusOnUserLocationEvent = new MutableLiveData<>(new Event<>(null));
 
-    private final LiveData<List<LocationModel>> remainingPointsPath;
+    private LiveData<List<LocationModel>> remainingPointsPath;
 
-    private final LiveData<List<StepModel>> remainingSteps;
+    private LiveData<StepModel> currentStep;
 
-    private final LiveData<StepModel> currentStep;
+    private LiveData<String> remainingDistance;
 
-    private final LiveData<String> remainingDistance;
+    private LiveData<String> remainingDuration;
 
-    private final LiveData<String> remainingDuration;
-
-    private final LiveData<LocationModel> userLocation;
+    private LiveData<LocationModel> userLocation;
 
     private Disposable navigationDisposable;
 
@@ -57,28 +55,51 @@ public class NavigationViewModel extends BaseViewModel {
         this.locationRepository = locationRepository;
         this.navigationRepository = navigationRepository;
 
+        setupLiveDatas();
+    }
+
+    private void setupLiveDatas() {
+        setupUserLocation();
+        setupRemainingPointsPath();
+        var remainingSteps = buildRemainingSteps();
+        setupCurrentStep(remainingSteps);
+        setupRemainingDistance(remainingSteps);
+        setupRemainingDuration(remainingSteps);
+    }
+
+    private void setupUserLocation() {
         userLocation = locationRepository.getCurrentLocation();
+    }
 
-        var remaining = navigationRepository.getRemainingNavigationPoints();
+    private void setupRemainingPointsPath() {
+        remainingPointsPath = Transformations.map(
+                navigationRepository.getRemainingNavigationPoints(),
+                points -> {
+                    return points.stream()
+                            .map(NavigationPointModel::getPoint)
+                            .collect(Collectors.toList());
+                });
+    }
 
-        remainingPointsPath = Transformations.map(remaining, points -> {
-            return points.stream()
-                    .map(NavigationPointModel::getPoint)
-                    .collect(Collectors.toList());
-        });
+    private LiveData<List<StepModel>> buildRemainingSteps() {
+        return Transformations.map(
+                navigationRepository.getRemainingNavigationPoints(),
+                points -> {
+                    return points.stream()
+                            .map(NavigationPointModel::getStep)
+                            .distinct()
+                            .collect(Collectors.toList());
+                });
+    }
 
-        remainingSteps = Transformations.map(remaining, points -> {
-            return points.stream()
-                    .map(NavigationPointModel::getStep)
-                    .distinct()
-                    .collect(Collectors.toList());
-        });
-
+    private void setupCurrentStep(LiveData<List<StepModel>> remainingSteps) {
         currentStep = Transformations.map(remainingSteps, steps -> {
                     return (steps == null || steps.isEmpty()) ? null : steps.get(0);
                 }
         );
+    }
 
+    private void setupRemainingDistance(LiveData<List<StepModel>> remainingSteps) {
         remainingDistance = Transformations.map(remainingSteps, steps -> {
             var distanceInMeter = steps.stream()
                     .map(it -> it.getDistance().getValue())
@@ -86,7 +107,9 @@ public class NavigationViewModel extends BaseViewModel {
                     .orElse(0);
             return distanceInMeter + " متر";
         });
+    }
 
+    private void setupRemainingDuration(LiveData<List<StepModel>> remainingSteps) {
         remainingDuration = Transformations.map(remainingSteps, steps -> {
             var durationInSeconds = steps.stream()
                     .map(it -> it.getDuration().getValue())
@@ -99,6 +122,7 @@ public class NavigationViewModel extends BaseViewModel {
             return durationInMinutes + " دقیقه";
         });
     }
+
 
     public void startLocationUpdates(OnTurnOnLocationResultListener callback) {
         locationRepository.subscribeToReceiveLocationUpdates(PrecisionLocationRequest.PRECISE, callback);
@@ -167,17 +191,6 @@ public class NavigationViewModel extends BaseViewModel {
 
     public void setUserLocation(LocationModel location) {
         locationRepository.setUserLocation(location);
-    }
-
-    private List<NavigationPointModel> toRoutingPoints(List<StepModel> steps) {
-        return steps.stream()
-                .map(step -> step.getRoutingPoints()
-                        .stream()
-                        .map(location -> new NavigationPointModel(location, step))
-                        .collect(Collectors.toList())
-                )
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
     }
 
     public LiveData<StepModel> getCurrentStep() {

@@ -21,12 +21,4 @@ public class NavigationPointModel {
         return step;
     }
 
-    public float distanceTo(NavigationPointModel another) {
-        return distanceTo(another.point);
-    }
-
-    public float distanceTo(LocationModel location) {
-        return point.distanceTo(location);
-    }
-
 }

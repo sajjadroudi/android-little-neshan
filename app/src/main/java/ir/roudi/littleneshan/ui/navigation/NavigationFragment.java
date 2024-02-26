@@ -161,9 +161,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
     private void registerFocusOnUserLocationObserver() {
         viewModel.getFocusOnUserLocationEvent().observe(getViewLifecycleOwner(), event -> {
-            event.doIfNotHandled(userLocation -> {
-                map.focusOnLocation(userLocation);
-            });
+            event.doIfNotHandled(map::focusOnLocation);
         });
     }
 
@@ -205,9 +203,14 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
     @Override
     public void onDestroy() {
-        LocalBroadcastManager.getInstance(requireContext())
-                        .unregisterReceiver(stopNavigationForegroundService);
+        unregisterBroadcastReceiver();
 
         super.onDestroy();
     }
+
+    private void unregisterBroadcastReceiver() {
+        LocalBroadcastManager.getInstance(requireContext())
+                .unregisterReceiver(stopNavigationForegroundService);
+    }
+
 }
