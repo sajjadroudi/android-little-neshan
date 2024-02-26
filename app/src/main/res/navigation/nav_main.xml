@@ -50,17 +50,20 @@
         <argument
             android:name="map_style"
             app:argType="integer"
-            app:nullable="false"/>
+            app:nullable="false"
+            android:defaultValue="1"/>
 
         <argument
             android:name="start"
             app:argType="ir.roudi.littleneshan.data.model.LocationModel"
-            app:nullable="false"/>
+            app:nullable="true"
+            android:defaultValue="@null"/>
 
         <argument
             android:name="end"
             app:argType="ir.roudi.littleneshan.data.model.LocationModel"
-            app:nullable="false"/>
+            app:nullable="true"
+            android:defaultValue="@null"/>
 
     </fragment>
 

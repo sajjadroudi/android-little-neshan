@@ -14,7 +14,9 @@ import dagger.hilt.components.SingletonComponent;
 public class SystemModule {
 
     @Provides
-    public static NotificationManager provideNotificationManager(@ApplicationContext Context context) {
+    public static NotificationManager provideNotificationManager(
+            @ApplicationContext Context context
+    ) {
         return context.getSystemService(NotificationManager.class);
     }
 

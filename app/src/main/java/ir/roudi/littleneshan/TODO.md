@@ -1,5 +1,4 @@
 ## Bug
-- Improve guide in the navigation screen.
 - Improve path polyline drawing to be drawn from user location to destination.
 
 ## Improvement
@@ -16,8 +15,6 @@
   - Just like Neshan.
 - Load last location when GPS is turned off.
   - Need to cache last location in shared preferences.
-- Handle landscape.
-- Add direction of the car when navigating.
 - Compatibility with Android 14.
 - Define UI model.
 
@@ -28,3 +25,6 @@
 - Add destination marker to the navigation screen.
 - Improve camera bounds to cover all the path from source to destination.
 - Update distance and duration automatically in the navigation screen.
+- Improve guide in the navigation screen.
+- Add direction of the car when navigating.
+- Handle landscape.

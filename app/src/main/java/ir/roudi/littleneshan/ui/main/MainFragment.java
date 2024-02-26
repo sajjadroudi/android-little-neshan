@@ -28,6 +28,7 @@ import ir.roudi.littleneshan.core.BaseFragment;
 import ir.roudi.littleneshan.data.model.LocationModel;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.databinding.FragmentMainBinding;
+import ir.roudi.littleneshan.service.NavigationForegroundService;
 import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.ui.navigation.NavigationFragmentArgs;
 import ir.roudi.littleneshan.utils.LiveDataUtils;
@@ -45,6 +46,18 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
     @Override
     public int getLayoutId() {
         return R.layout.fragment_main;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        navigateToNavigationScreenIfNeeded();
+    }
+
+    private void navigateToNavigationScreenIfNeeded() {
+        if(NavigationForegroundService.isRunning(getContext())) {
+            viewModel.navigateToNavigationScreen();
+        }
     }
 
     @Override
@@ -224,11 +237,10 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                         .remove(DestinationDetailsBottomSheet.KEY_DOES_START_NAVIGATION);
                 }
 
-                var args = new NavigationFragmentArgs.Builder(
-                        map.getMapStyle(),
-                        viewModel.getStartLocation(),
-                        viewModel.getEndLocation()
-                )
+                var args = new NavigationFragmentArgs.Builder()
+                        .setStart(viewModel.getStartLocation())
+                        .setEnd(viewModel.getEndLocation())
+                        .setMapStyle(map.getMapStyle())
                         .build()
                         .toBundle();
 

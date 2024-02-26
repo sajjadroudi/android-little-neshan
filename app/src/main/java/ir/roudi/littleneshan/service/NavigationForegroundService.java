@@ -1,5 +1,6 @@
 package ir.roudi.littleneshan.service;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -112,6 +113,17 @@ public class NavigationForegroundService extends Service {
     public static void stopService(Context context) {
         var intent = new Intent(context, NavigationForegroundService.class);
         context.stopService(intent);
+    }
+
+    public static boolean isRunning(Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (var service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            var serviceClassName = NavigationForegroundService.class.getName();
+            if (serviceClassName.equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

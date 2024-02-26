@@ -24,7 +24,6 @@ import ir.roudi.littleneshan.R;
 import ir.roudi.littleneshan.core.BaseFragment;
 import ir.roudi.littleneshan.data.repository.location.OnTurnOnLocationResultListener;
 import ir.roudi.littleneshan.databinding.FragmentNavigationBinding;
-import ir.roudi.littleneshan.service.NavigationForegroundService;
 import ir.roudi.littleneshan.ui.MainActivity;
 import ir.roudi.littleneshan.utils.LiveDataUtils;
 
@@ -61,8 +60,6 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
         registerBroadcastReceiver();
 
-        NavigationForegroundService.startService(getContext());
-
         startNavigation();
     }
 
@@ -97,7 +94,9 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
     private void startNavigation() {
         var args = NavigationFragmentArgs.fromBundle(getArguments());
-        viewModel.startNavigation(args.getStart(), args.getEnd());
+        if(args.getStart() != null && args.getEnd() != null) {
+            viewModel.startNavigation(args.getStart(), args.getEnd());
+        }
     }
 
     @Override
@@ -116,7 +115,11 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
     private void setupNavigationMap() {
         var args = NavigationFragmentArgs.fromBundle(getArguments());
         map = new NavigationMap(binding.map, args.getMapStyle());
-        map.markDestinationOnMap(args.getEnd());
+
+        var destination = viewModel.getDestination();
+        if(destination != null) {
+            map.markDestinationOnMap(destination);
+        }
     }
 
     private void registerOnMapClickListener() {
@@ -129,7 +132,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
         registerFocusOnUserLocationObserver();
         registerRemainingStepsObserver();
         registerCurrentStepObserver();
-        registerInitialFocusOnUserLocation();
+        registerInitialFocusOnUserLocationObserver();
     }
 
     private void registerUserLocationObserver() {
@@ -190,7 +193,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
         });
     }
 
-    private void registerInitialFocusOnUserLocation() {
+    private void registerInitialFocusOnUserLocationObserver() {
         LiveDataUtils.observeOnce(
                 viewModel.getUserLocation(),
                 getViewLifecycleOwner(),
@@ -202,9 +205,6 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
 
     @Override
     public void onDestroy() {
-
-        NavigationForegroundService.stopService(getContext());
-
         LocalBroadcastManager.getInstance(requireContext())
                         .unregisterReceiver(stopNavigationForegroundService);
 
