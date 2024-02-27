@@ -149,9 +149,6 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
             event.doIfNotHandled(reachedDestination -> {
                 if (reachedDestination) {
                     Toast.makeText(getContext(), "به مقصد رسیدید!", Toast.LENGTH_SHORT).show();
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        viewModel.navigateUp();
-                    }, 3000);
                 }
             });
         });
