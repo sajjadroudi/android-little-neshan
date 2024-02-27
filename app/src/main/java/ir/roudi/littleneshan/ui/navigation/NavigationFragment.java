@@ -1,7 +1,5 @@
 package ir.roudi.littleneshan.ui.navigation;
 
-import static androidx.navigation.fragment.FragmentKt.findNavController;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -152,7 +150,7 @@ public class NavigationFragment extends BaseFragment<FragmentNavigationBinding, 
                 if (reachedDestination) {
                     Toast.makeText(getContext(), "به مقصد رسیدید!", Toast.LENGTH_SHORT).show();
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        findNavController(NavigationFragment.this).navigateUp();
+                        viewModel.navigateUp();
                     }, 3000);
                 }
             });

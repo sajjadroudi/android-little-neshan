@@ -83,7 +83,11 @@ public abstract class BaseFragment<DB extends ViewDataBinding, VM extends BaseVi
         viewModel.getNavigateUpEvent().observe(getViewLifecycleOwner(), event -> {
             event.doIfNotHandled(shouldNavigateUp -> {
                 if(shouldNavigateUp) {
-                    findNavController(BaseFragment.this).navigateUp();
+                    try {
+                        findNavController(BaseFragment.this).navigateUp();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         });
