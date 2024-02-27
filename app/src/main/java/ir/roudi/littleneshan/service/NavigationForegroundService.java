@@ -74,6 +74,7 @@ public class NavigationForegroundService extends Service {
 
     private PendingIntent buildContentIntent() {
         var launchActivityIntent = new Intent(this, MainActivity.class);
+        launchActivityIntent.setPackage(BuildConfig.APPLICATION_ID);
         launchActivityIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         launchActivityIntent.setAction(Intent.ACTION_VIEW);
 
@@ -87,6 +88,7 @@ public class NavigationForegroundService extends Service {
 
     private PendingIntent buildEndActionIntent() {
         var intent = new Intent(this, NavigationForegroundService.class);
+        intent.setPackage(BuildConfig.APPLICATION_ID);
         intent.setAction(ACTION_STOP);
         return PendingIntent.getService(
                 this,
@@ -107,11 +109,13 @@ public class NavigationForegroundService extends Service {
 
     public static void startService(Context context) {
         var intent = new Intent(context, NavigationForegroundService.class);
+        intent.setPackage(BuildConfig.APPLICATION_ID);
         ContextCompat.startForegroundService(context, intent);
     }
 
     public static void stopService(Context context) {
         var intent = new Intent(context, NavigationForegroundService.class);
+        intent.setPackage(BuildConfig.APPLICATION_ID);
         context.stopService(intent);
     }
 
@@ -138,6 +142,7 @@ public class NavigationForegroundService extends Service {
     public void onDestroy() {
 
         var intent = new Intent(NavigationFragment.ACTION_STOP_NAVIGATION_SERVICE);
+        intent.setPackage(BuildConfig.APPLICATION_ID);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
         super.onDestroy();

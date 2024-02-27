@@ -313,8 +313,8 @@ public class MainFragment extends BaseFragment<FragmentMainBinding, MainViewMode
                     }
 
                     private void openSettings() {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        intent.setPackage(BuildConfig.APPLICATION_ID);
                         Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
                         intent.setData(uri);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
